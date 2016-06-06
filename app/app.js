@@ -3,7 +3,11 @@
 // Declare app level module which depends on views, and components
 angular.module('myApp', [
   'ui.router'
+    ,'myApp.dialog'
     ,'myApp.home'
+    ,'ngAnimate'
+    ,'ui.bootstrap'
+    ,'ngDraggable'
 ]).
 config(['$stateProvider', '$urlRouterProvider',
   function($stateProvider, $urlRouterProvider) {

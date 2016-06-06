@@ -22,6 +22,14 @@ iframe{
   width: 10px;
 }
 
+.match-parent-width{
+  width: 100%;
+}
+
+.match-parent-height{
+  height: 100%;
+}
+
 .menu {
   list-style: none;
   border-bottom: 0.1em solid black;

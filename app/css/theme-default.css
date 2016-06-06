@@ -1,5 +1,30 @@
 .f-panel-header{
-    background: #3E4C5F;
+    /*background: #3E4C5F;*/
+}
+
+.f-toolbar-item{
+    background: none;
+    border: none;
+    color: #363636;
+}
+
+.f-toolbar-item:hover{
+    color: #bc2328;
+}
+
+.f-toolbar-item:active{
+    color: #32bc14;
+}
+
+.f-toolbar-item:disabled{
+    color: #6d6a69;
+}
+
+.nav-tabs > li > a:hover,
+.nav > li > a:hover{
+    border-color: transparent transparent transparent;
+    color: #555;
+    background: none;
 }
 
 .f-panel-content{
@@ -34,22 +59,3 @@
 .splitter-inner-v{
     background: #f0f0f0;
 }
-
-.f-toolbar-item{
-    background: none;
-    border: none;
-    color: white;
-}
-
-.f-toolbar-item:hover{
-    color: #bc2328;
-}
-
-.f-toolbar-item:active{
-    color: #32bc14;
-}
-
-.f-toolbar-item:disabled{
-    color: #6d6a69;
-}
-

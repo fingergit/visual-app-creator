@@ -1,5 +1,4 @@
 .window{
-    position: relative;
     width: 100%;
     height: 100vh;
 }
@@ -13,6 +12,11 @@
     height: 100px;
     top: 0;
     left: 0;
+}
+
+.nav > li > a{
+    padding-top: 4px;
+    padding-bottom: 4px;
 }
 
 .f-panel-content{
@@ -31,20 +35,21 @@
 
 .f-panel-left{
     float: left;
-    width: 100px;
+    width: 200px;
     height: 100%;
     left: 0;
 }
 .f-panel-right{
     float: left;
-    width: 100px;
+    width: 200px;
     height: 100%;
     right: 0;
 }
 .f-panel-middle{
+    position: absolute;
     float: left;
-    left: 100px;
-    right: 100px;
+    left: 200px;
+    right: 200px;
     height: 100%;
 }
 .splitter{
@@ -85,14 +90,37 @@
     font-size: 18px;
 }
 
-/*.nav-tabs > li > a:hover,*/
-/*.nav > li > a:hover{*/
-    /*border-color: transparent transparent transparent;*/
-    /*color: #555;*/
-    /*background: none;*/
-/*}*/
+.widget-panel{
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
 
-/*.nav > li > a{*/
-    /*padding-top: 2px;*/
-    /*padding-bottom: 2px;*/
-/*}*/
+.widgeticon{
+    width: 90px;
+    display: inline-block;
+}
+
+.widget{
+    width: 90px;
+    height: 50px;
+    background: no-repeat transparent center top url("../img/widget-icons.png");
+    background-size: 90px;
+
+    transition-property: opacity, transform;
+    transform: scale3d(1, 1, 1);
+    transition-duration: .25s;
+    transition-timing-function: linear, cubic-bezier(0.33, 2, 0.66, 1);
+}
+
+.widget:hover{
+    background-position-y: -50px;
+    transform: scale3d(1.15, 1.15, 1);
+}
+
+.widget-name{
+    margin: auto;
+    width: 100%;
+    text-align: center;
+}

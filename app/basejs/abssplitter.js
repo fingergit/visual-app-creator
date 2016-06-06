@@ -89,7 +89,7 @@ function FinSplitter() {
      */
     FinSplitter.prototype.init = function () {
         this.$splitters = $(".splitter");
-        console.log(this.$splitters);
+        // console.log(this.$splitters);
 
         // 读取保存的位置信息，设置给相应的面板。
         this.load();
@@ -97,7 +97,7 @@ function FinSplitter() {
         var $body = $("body");
         this.oldCursor = $body.css("cursor"); // 保存原始cursor。
         $.each(this.$splitters, function (index, splitter) {
-            console.log(splitter);
+            // console.log(splitter);
 
             $(splitter).css("cursor", $(splitter).width() < $(splitter).height() ? "ew-resize":"ns-resize");
         });
@@ -265,7 +265,7 @@ function FinSplitter() {
             }
         });
 
-        console.log("rc: " + panelPos);
+        // console.log("rc: " + panelPos);
     };
 
     /** 保存splitter数据到本地。*/
