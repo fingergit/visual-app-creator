@@ -1,0 +1,98 @@
+.window{
+    position: relative;
+    width: 100%;
+    height: 100vh;
+}
+
+.f-panel{
+    position: absolute;
+}
+
+.f-panel-header{
+    width: 100%;
+    height: 100px;
+    top: 0;
+    left: 0;
+}
+
+.f-panel-content{
+    width: 100%;
+    top: 100px;
+    bottom: 100px;
+    left: 0;
+}
+
+.f-panel-footer{
+    width: 100%;
+    height: 100px;
+    bottom: 0;
+    left: 0;
+}
+
+.f-panel-left{
+    float: left;
+    width: 100px;
+    height: 100%;
+    left: 0;
+}
+.f-panel-right{
+    float: left;
+    width: 100px;
+    height: 100%;
+    right: 0;
+}
+.f-panel-middle{
+    float: left;
+    left: 100px;
+    right: 100px;
+    height: 100%;
+}
+.splitter{
+    position: absolute;
+    z-index: 100;
+}
+.splitter-h{
+    width: 8px;
+    margin-right: -4px;
+    height: 100%;
+    right: 0;
+}
+.splitter-v{
+    height: 8px;
+    margin-bottom: -8px;
+    width: 100%;
+    bottom: 0;
+}
+
+.splitter-inner-h{
+    width: 1px;
+    height: 100%;
+    margin: auto;
+    pointer-events: none;
+}
+
+.splitter-inner-v{
+    height: 1px;
+    width: 100%;
+    margin: auto;
+    pointer-events: none;
+}
+
+.f-toolbar-item{
+    padding: 0;
+    width: 24px;
+    height: 24px;
+    font-size: 18px;
+}
+
+/*.nav-tabs > li > a:hover,*/
+/*.nav > li > a:hover{*/
+    /*border-color: transparent transparent transparent;*/
+    /*color: #555;*/
+    /*background: none;*/
+/*}*/
+
+/*.nav > li > a{*/
+    /*padding-top: 2px;*/
+    /*padding-bottom: 2px;*/
+/*}*/

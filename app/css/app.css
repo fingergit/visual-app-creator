@@ -1,4 +1,26 @@
 /* app css stylesheet */
+body{
+  padding: 0;
+  margin: 0;
+}
+
+iframe{
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+  overflow: hidden;
+}
+
+.fl{
+  float: left;
+}
+
+.f-spacer-h-10{
+  display: inline-block;
+  width: 10px;
+}
 
 .menu {
   list-style: none;

@@ -3,6 +3,7 @@
 // Declare app level module which depends on views, and components
 angular.module('myApp', [
   'ui.router'
+    ,'myApp.home'
 ]).
 config(['$stateProvider', '$urlRouterProvider',
   function($stateProvider, $urlRouterProvider) {
@@ -11,10 +12,15 @@ config(['$stateProvider', '$urlRouterProvider',
   // $routeProvider.otherwise({redirectTo: '/view1'});
 
   // For any unmatched url, redirect to /state1
-  $urlRouterProvider.otherwise("/state1");
+  $urlRouterProvider.otherwise("/home");
   //
   // Now set up the states
   $stateProvider
+      .state('home', {
+          url: '/home',
+          templateUrl: 'home/home.html'
+          ,controller: 'HomeCtrl'
+      })
       .state('state1', {
         url: "/state1",
         templateUrl: "state1/state1.html"

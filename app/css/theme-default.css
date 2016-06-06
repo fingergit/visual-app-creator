@@ -1,0 +1,55 @@
+.f-panel-header{
+    background: #3E4C5F;
+}
+
+.f-panel-content{
+    background: #d58512;
+}
+
+.f-panel-footer{
+    background: #0c60ee;
+    color: white;
+}
+
+.f-panel-left{
+    background: #65cc93;
+}
+.f-panel-right{
+    background: #cc5299;
+}
+.f-panel-middle{
+    background: #ef4e3a;
+}
+
+.splitter-h{
+    background: none;
+}
+.splitter-v{
+}
+
+.splitter-inner-h{
+    background: #f0f0f0;
+}
+
+.splitter-inner-v{
+    background: #f0f0f0;
+}
+
+.f-toolbar-item{
+    background: none;
+    border: none;
+    color: white;
+}
+
+.f-toolbar-item:hover{
+    color: #bc2328;
+}
+
+.f-toolbar-item:active{
+    color: #32bc14;
+}
+
+.f-toolbar-item:disabled{
+    color: #6d6a69;
+}
+
