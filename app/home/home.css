@@ -124,3 +124,8 @@
     width: 100%;
     text-align: center;
 }
+
+#sizeUnit{
+    padding-left:0;
+    padding-right:0;
+}

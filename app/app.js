@@ -4,12 +4,14 @@
 angular.module('myApp', [
   'ui.router'
     ,'myApp.dialog'
+    ,'myApp.messagebox'
     ,'myApp.home'
     ,'ngAnimate'
     ,'ui.bootstrap'
+    ,'color.picker'
     ,'ngDraggable'
-]).
-config(['$stateProvider', '$urlRouterProvider',
+])
+.config(['$stateProvider', '$urlRouterProvider',
   function($stateProvider, $urlRouterProvider) {
   // $locationProvider.hashPrefix('!');
 
@@ -47,4 +49,50 @@ config(['$stateProvider', '$urlRouterProvider',
           $scope.things = ["A", "Set", "Of", "Things"];
         }
       });
-}]);
+}])
+
+.controller('AppCtrl', ['$scope', '$rootScope', '$uibModal', '$log',
+    function($scope, $rootScope, $uibModal, $log) {
+        $scope.confirm = function (content,title) {
+            var modalInstance = $uibModal.open({
+                animation: true,
+                templateUrl: './dialog/messagebox.html',
+                size: '',
+                controller: function ($uibModalInstance, $scope) {
+                    $scope.dlgTitle = title||"提示";
+                    $scope.dlgContent = content||"world";
+                    $scope.ok = function () {
+                        $uibModalInstance.close();
+                    };
+
+                    $scope.cancel = function () {
+                        $uibModalInstance.dismiss();
+                    };
+                }
+            });
+
+            modalInstance.result.then(function () {
+                $log.info('OK.' + new Date());
+            }, function () {
+                $log.info('Cancel');
+            });
+            // var modalInstance = $uibModal.open({
+            //     animation: true,
+            //     templateUrl: './dialog/dialogContent.html',
+            //     controller: 'DialogCtrl',
+            //     size: '',
+            //     resolve: {
+            //         items: function () {
+            //             return $scope.items;
+            //         }
+            //     }
+            // });
+            //
+            // modalInstance.result.then(function (selectedItem) {
+            //     $scope.selected = selectedItem;
+            // }, function () {
+            //     $log.info('Modal dismissed at: ' + new Date());
+            // });
+        };
+    }])
+;

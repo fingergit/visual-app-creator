@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('myApp.home',['myApp.home.leftpanel','myApp.home.toolbar'])
+angular.module('myApp.home',['myApp.home.toolbar','myApp.home.leftpanel','myApp.home.rightpanel'])
 
 .config(['$stateProvider', function($stateProvider) {
   // $routeProvider.when('/view2', {
@@ -58,6 +58,20 @@ angular.module('myApp.home',['myApp.home.leftpanel','myApp.home.toolbar'])
     return {
         restrict: 'E'
         ,templateUrl: './home/widgeticon.html'
+    };
+})
+
+.directive('finRightPanel', function() {
+    return {
+        restrict: 'E'
+        ,templateUrl: './home/rightpanel.html'
+    };
+})
+
+.directive('finPropTextPanel', function() {
+    return {
+        restrict: 'E'
+        ,templateUrl: './home/prop-text.html'
     };
 })
 ;

@@ -3,7 +3,7 @@
         <uib-tab index="0" heading="开始">
             <!--<button class="fa f-toolbar-item {{item.icon}}" uib-tooltip="{{item.name}}" data-id="{{item.itemId}}" ng-repeat="item in toolItems"></button>-->
             <span ng-repeat-start="group in toolItems">
-                <button class="fa f-toolbar-item {{item.icon}}" uib-tooltip="{{item.name}}" data-id="{{item.itemId}}"  ng-click="onClickToolItem(item)" ng-repeat="item in group"></button>
+                <button class="fa f-toolbar-item {{item.icon}}" uib-tooltip="{{item.name}}" data-id="{{item.itemId}}"  ng-click="confirm(item.name)" ng-repeat="item in group"></button>
             </span>
             <span ng-repeat-end>
                 <span class="f-spacer-h-10"></span>

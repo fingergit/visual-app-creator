@@ -36,26 +36,6 @@ angular.module('myApp.home.toolbar',[])
         });
     };
 
-    $scope.onClickToolItem = function (toolItem) {
-        var modalInstance = $uibModal.open({
-            animation: true,
-            templateUrl: './dialog/dialogContent.html',
-            controller: 'DialogCtrl',
-            size: '',
-            resolve: {
-                items: function () {
-                    return $scope.items;
-                }
-            }
-        });
-
-        modalInstance.result.then(function (selectedItem) {
-            $scope.selected = selectedItem;
-        }, function () {
-            $log.info('Modal dismissed at: ' + new Date());
-        });
-    };
-
     $scope.model = {
         name: 'Tabs'
     };

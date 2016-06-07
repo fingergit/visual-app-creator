@@ -12,6 +12,8 @@
 
   <link rel="stylesheet" href="bower_components/html5-boilerplate/dist/css/normalize.css">
   <link rel="stylesheet" href="bower_components/html5-boilerplate/dist/css/main.css">
+  <link rel="stylesheet" href="bower_components/angularjs-color-picker/dist/angularjs-color-picker.min.css" />
+  <link rel="stylesheet" href="basejs/slider/angular-slider.css" />
 
   <link rel="stylesheet" href="basejs/bootstrap-3.3.6/css/bootstrap.css">
   <link rel="stylesheet" href="css/font-awesome.min.css">
@@ -23,7 +25,7 @@
 
   <script src="bower_components/html5-boilerplate/dist/js/vendor/modernizr-2.8.3.min.js"></script>
 </head>
-<body>
+<body ng-controller="AppCtrl">
   <!--<ul class="menu">-->
     <!--<li><a ui-sref="home">Home</a></li>-->
     <!--<li><a ui-sref="state1">State 1</a></li>-->
@@ -55,11 +57,18 @@
   <script src="basejs/ui-bootstrap/ui-bootstrap-tpls-1.3.3.js"></script>
   <!--http://ngmodules.org/modules/ngDraggable-->
   <script src="basejs/ngDragable/ngDraggable.js"></script>
+  <!--http://ruhley.github.io/angular-color-picker/-->
+  <script src="bower_components/tinycolor/tinycolor.js"></script>
+  <script src="bower_components/angularjs-color-picker/dist/angularjs-color-picker.min.js"></script>
+  <script src="basejs/slider/angular-slider.js"></script>
+
   <script src="app.js"></script>
   <script src="dialog/dialogContent.js"></script>
+  <script src="dialog/messagebox.js"></script>
   <script src="home/home.js"></script>
   <script src="home/toolbar.js"></script>
   <script src="home/leftpanel.js"></script>
+  <script src="home/rightpanel.js"></script>
 
   <script src="components/version/version.js"></script>
   <script src="components/version/version-directive.js"></script>
