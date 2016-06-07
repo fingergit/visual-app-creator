@@ -8,6 +8,7 @@ angular.module('myApp', [
     ,'myApp.home'
     ,'ngAnimate'
     ,'ui.bootstrap'
+    ,'ui.slider'
     ,'color.picker'
     ,'ngDraggable'
 ])
