@@ -5,6 +5,7 @@ angular.module('myApp', [
   'ui.router'
     ,'myApp.dialog'
     ,'myApp.messagebox'
+    ,'myApp.common'
     ,'myApp.home'
     ,'ngAnimate'
     ,'ui.bootstrap'
