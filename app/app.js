@@ -8,10 +8,59 @@ angular.module('myApp', [
     ,'myApp.home'
     ,'ngAnimate'
     ,'ui.bootstrap'
-    ,'ui.slider'
+    ,'rzModule'
     ,'color.picker'
     ,'ngDraggable'
 ])
+.provider("ActionManager", [function () {
+    var e = {}, t = [], n = [];
+    var actionMgr = new ActionManager();
+    return {
+        $get: ["$rootScope", function (i) {
+            return {
+                addAction: function (action) {
+                    actionMgr.addAction(action);
+                }, canUndo: function () {
+                    return actionMgr.canUndo();
+                }, canRedo: function () {
+                    return actionMgr.canRedo();
+                }, undo: function () {
+                    actionMgr.undo();
+                }, redo: function () {
+                    actionMgr.redo();
+                }
+            }
+        }]
+    }
+}])
+.factory("Hotkeys", ["$state", "$rootScope", "ActionManager", function ($state, $rootScope, ActionManager){
+    return {
+        regist: function () {
+            // returning false stops the event and prevents default browser events
+            // https://github.com/madrobby/keymaster
+            key("esc", function (e) {
+                alert('you pressed a!'); return false;
+            });
+            key("delete, backspace", function (e) {
+                alert('you pressed delete!');
+            }), key("ctrl+s, ⌘+s", function (e) {
+                alert('you pressed delete!');
+            }), key("ctrl+c, ⌘+c", function (t) {
+                alert('you pressed delete!');
+            }), key("ctrl+x, ⌘+x", function (e) {
+                alert('you pressed delete!');
+            }), key("ctrl+v, ⌘+v", function (e) {
+                alert('you pressed delete!');
+            }), key("ctrl+d, ⌘+d", function (e) {
+                alert('you pressed delete!');
+            }), key("ctrl+z, ⌘+z", function (e) {
+                ActionManager.undo();
+            }), key("ctrl+shift+z,⌘+shift+z,ctrl+y,⌘+y", function (e) {
+                ActionManager.redo();
+            });
+        }
+    }
+}])
 .config(['$stateProvider', '$urlRouterProvider',
   function($stateProvider, $urlRouterProvider) {
   // $locationProvider.hashPrefix('!');
@@ -52,8 +101,9 @@ angular.module('myApp', [
       });
 }])
 
-.controller('AppCtrl', ['$scope', '$rootScope', '$uibModal', '$log',
-    function($scope, $rootScope, $uibModal, $log) {
+.controller('AppCtrl', ['$scope', '$rootScope', '$uibModal', '$log', 'Hotkeys',
+    function($scope, $rootScope, $uibModal, $log, Hotkeys) {
+        Hotkeys.regist();
         $scope.confirm = function (content,title) {
             var modalInstance = $uibModal.open({
                 animation: true,

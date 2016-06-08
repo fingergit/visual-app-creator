@@ -44,7 +44,10 @@
     width: 200px;
     height: 100%;
     right: 0;
+    padding-left: 4px;
+    padding-right: 4px;
 }
+
 .f-panel-middle{
     position: absolute;
     float: left;
@@ -129,3 +132,31 @@
     padding-left:0;
     padding-right:0;
 }
+
+#propValue{
+    width: 50px;
+}
+
+#sliderValue{
+    width: calc(100% - 50px);
+    width: -webkit-calc(100% - 50px);
+    width: -moz-calc(100% - 50px);
+}
+
+/*调整rzslider的边缘*/
+.rzslider{
+    margin: 12px 0px;
+}
+
+/*不显示rzslider上面的数字*/
+.rzslider .rz-bubble{
+    display: none;
+}
+
+/*不显示number input的小箭头*/
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button{
+    -webkit-appearance: none !important;
+    margin: 0;
+}
+input[type="number"]{-moz-appearance:textfield;}
