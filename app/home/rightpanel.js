@@ -12,26 +12,21 @@ angular.module('myApp.home.rightpanel',[])
 .controller('RightPanelCtrl', ['$scope', function($scope) {
 }])
 
-.controller('PropTextCtrl', ['$scope', '$window', '$log', 'ActionManager', function($scope, $window, $log, ActionManager) {
+.controller('PropTextCtrl', ['$scope', '$rootScope','$window', '$log', 'ActionManager', function($scope, $rootScope, $window, $log, ActionManager) {
 
-    $scope.propTextDesc = {
-        align: {name: '对齐', actionName: '对齐', type: 'enumButton', typeRange: [
-            {value: 'left', icon: 'fa-align-left'}
-            ,{value: 'center', icon: 'fa-align-center'}
-            ,{value: 'right', icon: 'fa-align-right'}
-            ,{value: 'justify', icon: 'fa-align-justify'}
-        ]}
-        , size: {value: {name: '尺寸', actionName: '尺寸', type: 'int', min: 0, max: 999},
-            unit: {name: '尺寸单位', actionName: '尺寸单位', type: 'enum', typeRange: ['px','pt']}}
-        ,color: {name: '颜色', actionName: '文字颜色', type: 'color'}
-    };
+    // $scope.propText = {
+    //     align: {desc: $rootScope.propTextDesc.align, value: 'center'}
+    //     ,size: {comb: true, desc: $rootScope.propTextDesc.size, value: {desc: $rootScope.propTextDesc.size.value, value: 10}
+    //             ,unit: {desc: $rootScope.propTextDesc.size.unit, value: 'pt'}}
+    //     ,color: {desc: $rootScope.propTextDesc.color, value: '#FFFFFF00'}
+    //     ,backColor: {desc: $rootScope.propTextDesc.backColor, value: '#FF00FF00'}
+    //     ,position: {desc: $rootScope.propTextDesc.position, value: 'relative'}
+    //     ,left: {desc: $rootScope.propTextDesc.left, value: '0'}
+    //     ,visible: {desc: $rootScope.propTextDesc.visible, value: 'true'}
+    // };
+    $scope.propText = $rootScope.selElem.propText;
 
-    $scope.propText = {
-        align: {desc: $scope.propTextDesc.align, value: 'center'}
-        ,size: {value: {desc: $scope.propTextDesc.size.value, value: 10}
-                ,unit: {desc: $scope.propTextDesc.size.unit, value: 'pt'}}
-        ,color: {desc: $scope.propTextDesc.color, value: '#FFFFFF00'}
-    };
+    $scope.ary = ['a', 'b', 'c'];
 
     $scope.slider = {
         value: 150
@@ -48,6 +43,9 @@ angular.module('myApp.home.rightpanel',[])
 
     $scope.onTextSizeUnit = function (unit) {
         $scope.propText.size.unit.value = unit;
+    };
+
+    $scope.onBtnTest = function () {
     };
 
     function ValueAction(name, obj, field, oldValue, newValue){
@@ -94,10 +92,49 @@ angular.module('myApp.home.rightpanel',[])
      * @param obj   action操作的对象。
      * @param field 操作的对象的字段。
      */
-    function valueChange(newValue, oldValue, scope, name, obj, field) {
+    function valueChange(newValue, oldValue, scope, name, propName, obj, field) {
         if (oldValue == null || oldValue === newValue){
             return;
         }
+
+        if ($rootScope.selElem == null){
+            $log.info("no element selected.");
+            return;
+        }
+
+        var $elem = $("#" + $rootScope.selElem.id);
+        if (null == $elem){
+            $log.info("selected element not exist.");
+            return;
+        }
+
+        switch (propName){
+            case 'align':
+                $elem.css("text-align", obj[field]);
+                break;
+            case 'color':
+                $elem.css("color", obj[field]);
+                break;
+            case 'backColor':
+                $elem.css("background-color", obj[field]);
+                break;
+            case 'position':
+                $elem.css("position", obj[field]);
+                break;
+            case 'left':
+                $elem.css("left", obj[field] + "px");
+                break;
+            case 'visible':
+                $elem.css("visibility", obj[field]?"inherit":"hidden");
+                break;
+            case 'width':
+                $elem.css("width", $scope.propText.width.value.value + $scope.propText.width.unit.value);
+                break;
+            case 'size':
+                $elem.css("font-size", $scope.propText.size.value.value + $scope.propText.size.unit.value);
+                break;
+        }
+
         if (obj.undo){
             obj.undo = false;
             return;
@@ -112,20 +149,23 @@ angular.module('myApp.home.rightpanel',[])
 
     function watchAll(obj, objVarName){
         for (var item in obj){
+            if (typeof(obj[item]) !== "object"){
+                continue;
+            }
+            if ('comb' in obj[item]){
+                watchAll(obj[item], objVarName + '.' + item);
+            }
             if ('desc' in obj[item]){
                 var actionName = obj[item]['desc']['actionName'];
                 var changeObj = obj[item];
 
                 // 使用匿名函数向回调函数传参。
-                (function (actionName, changeObj) {
+                (function (actionName, propName, changeObj) {
                     $scope.$watch(objVarName + '.' + item + '.value', function(newValue,oldValue, scope){
-                        valueChange(newValue, oldValue, scope, actionName, changeObj, "value");
+                        valueChange(newValue, oldValue, scope, actionName, propName, changeObj, "value");
                     });
                     $log.debug("now watch: " + objVarName + '.' + item + '.value');
-                })(actionName, changeObj);
-            }
-            else{
-                watchAll(obj[item], objVarName + '.' + item);
+                })(actionName, item, changeObj);
             }
         }
     }

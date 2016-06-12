@@ -27,13 +27,13 @@ function ActionManager() {
 
 {
     ActionManager.prototype.addAction = function (action) {
-        // 如果action的名称与前一个action的名称相同，且此次调用时间与上次调用时间不超过1秒钟，则认为与上个action为同一个action。
+        // 如果action的名称与前一个action的名称相同，且此次调用时间与上次调用时间不超过0.2秒钟，则认为与上个action为同一个action。
         if (this.undoList.length > 0){
             var lastAction = this.undoList[this.undoList.length-1];
             if (lastAction.name != null && lastAction.name == action.name &&
                 action.obj === lastAction.obj &&
                 action.field === lastAction.field &&
-                action.time - lastAction.time<1000
+                action.time - lastAction.time<200
             ){
                 action.oldValue = lastAction.oldValue;
                 this.undoList.pop();

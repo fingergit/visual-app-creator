@@ -9,14 +9,32 @@ angular.module('myApp.home',['myApp.home.toolbar','myApp.home.leftpanel','myApp.
   // });
 }])
 
-.controller('HomeCtrl', ['$scope', '$window', function($scope,$window) {
+.controller('HomeCtrl', ['$scope', '$rootScope', '$window', function($scope, $rootScope, $window) {
     var splitter = new FinSplitter();
     splitter.init();
 
-    $scope.customer = {
-        name: 'Naomi'
-        ,address: '1600 Amphitheatre'
+    $rootScope.proj = {
+        userId: 'zhangsan'
+        ,elements: [{
+            name: 'elem1'
+            , type: 'button'
+            , id: 'elem1-button'
+            , propText : {
+                align: {desc: $rootScope.propTextDesc.align, value: 'center'}
+                ,size: {comb: true, desc: $rootScope.propTextDesc.size, value: {desc: $rootScope.propTextDesc.size.value, value: 10}
+                    ,unit: {desc: $rootScope.propTextDesc.size.unit, value: 'pt'}}
+                ,color: {desc: $rootScope.propTextDesc.color, value: '#FFFF00'}
+                ,backColor: {desc: $rootScope.propTextDesc.backColor, value: '#00FF00'}
+                ,position: {desc: $rootScope.propTextDesc.position, value: 'relative'}
+                ,left: {desc: $rootScope.propTextDesc.left, value: '0'}
+                ,visible: {desc: $rootScope.propTextDesc.visible, value: 'true'}
+                ,width: {comb: true, desc: $rootScope.propTextDesc.width, value: {desc: $rootScope.propTextDesc.width.value, value: 100}
+                    ,unit: {desc: $rootScope.propTextDesc.width.unit, value: 'px'}}
+            }
+        }]
     };
+
+    $rootScope.selElem = $rootScope.proj.elements[0];
     
     $scope.onDropComplete = function (obj, event) {
         var target = $(event.event.target);

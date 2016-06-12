@@ -49,6 +49,35 @@ label{
   font-weight: normal;
 }
 
+.dropdown-toggle{
+  text-align: left;
+}
+
+.caret{
+  text-align: right;
+  position: absolute;
+  right: 4px;
+  top: calc(50% - 2px);
+  top: -webkit-calc(50% - 2px);
+  top: -moz-calc(50% - 2px);
+}
+
+/*finPropCombox右侧的按钮与其它控件对齐*/
+.form-group .col-sm-8{
+  padding-left: 0;
+  padding-right: 0;
+}
+
+/*finPropCombox下拉框宽度与按钮对齐*/
+.btn-group .dropdown-menu{
+  min-width: 100%;
+}
+
+/* 让div中的控件右对齐, 用于属性面板中的swithc控件右对齐*/
+.ta-right{
+  text-align: right;
+}
+
 .menu {
   list-style: none;
   border-bottom: 0.1em solid black;

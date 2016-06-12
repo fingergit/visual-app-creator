@@ -1,7 +1,6 @@
 <div class="form-group">
     <label class="col-sm-4 control-label input-sm" ng-bind="label"></label>
     <div class="input-group col-sm-8">
-        <!--'hsl', 'hsv', 'rgb', 'hex', 'hex8'-->
-        <color-picker ng-model="ngModel" color-picker-format="'hex'"></color-picker>
+        <input name="{{name}}" type="{{type}}" ng-model="ngModel" class="form-control input-sm">
     </div>
 </div>

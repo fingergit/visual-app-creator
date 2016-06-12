@@ -7,11 +7,13 @@ angular.module('myApp', [
     ,'myApp.messagebox'
     ,'myApp.common'
     ,'myApp.home'
+    ,'myApp.constrols'
     ,'ngAnimate'
     ,'ui.bootstrap'
     ,'rzModule'
     ,'color.picker'
     ,'ngDraggable'
+    ,'uiSwitch'
 ])
 .provider("ActionManager", [function () {
     var e = {}, t = [], n = [];
@@ -105,6 +107,14 @@ angular.module('myApp', [
 .controller('AppCtrl', ['$scope', '$rootScope', '$uibModal', '$log', 'Hotkeys',
     function($scope, $rootScope, $uibModal, $log, Hotkeys) {
         Hotkeys.regist();
+
+        // 禁止浏览器自身的ctrl+z执行的undo。
+        $(window).bind('keydown', function(evt) {
+            if((evt.ctrlKey || evt.metaKey) && String.fromCharCode(evt.which).toLowerCase() == 'z') {
+                evt.preventDefault();
+            }
+        });
+
         $scope.confirm = function (content,title) {
             var modalInstance = $uibModal.open({
                 animation: true,
@@ -146,5 +156,27 @@ angular.module('myApp', [
             //     $log.info('Modal dismissed at: ' + new Date());
             // });
         };
+
+        initProps();
+
+        function initProps() {
+            $rootScope.propTextDesc = {
+                align: {name: '对齐', actionName: '对齐', type: 'enumButton', typeRange: [
+                    {value: 'left', icon: 'fa-align-left'}
+                    ,{value: 'center', icon: 'fa-align-center'}
+                    ,{value: 'right', icon: 'fa-align-right'}
+                    ,{value: 'justify', icon: 'fa-align-justify'}
+                ]}
+                , size: {type: 'numberWithUnit', value: {name: '尺寸', actionName: '尺寸', type: 'number', min: 0, max: 999},
+                    unit: {name: '尺寸单位', actionName: '尺寸单位', type: 'enum', typeRange: ['px','pt']}}
+                ,color: {name: '颜色', actionName: '文字颜色', type: 'color'}
+                ,backColor: {name: '背景色', actionName: '背景颜色', type: 'color'}
+                ,position: {name: '位置', actionName: '位置', type: 'enum', typeRange: ['static','relative', 'absolute', 'fixed']}
+                ,left: {name: '左', actionName: '左', type: 'input', subType: 'number'}
+                ,visible: {name: '显示', actionName: '显示', type: 'bool'}
+                ,width: {type: 'numberWithUnit', value: {name: '宽度', actionName: '宽度', type: 'number', min: 0, max: 999},
+                    unit: {name: '宽度单位', actionName: '宽度单位', type: 'enum', typeRange: ['px','%']}}
+            };
+        }
     }])
 ;
