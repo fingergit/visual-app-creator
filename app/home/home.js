@@ -92,4 +92,55 @@ angular.module('myApp.home',['myApp.home.toolbar','myApp.home.leftpanel','myApp.
         ,templateUrl: './home/prop-text.html'
     };
 })
+
+.directive('finDrag', ['$rootScope', '$parse', '$document', '$window', '$compile', function($rootScope, $parse, $document, $window, $compile) {
+    return {
+        restrict: 'A'
+        ,link: function (scope, element, attrs) {
+            element.attr('draggable', true);
+            element.on('dragstart', function (e) {
+                // var text = '<label class="toggle"><input type="checkbox"><div class="track"><div class="handle"></div></div></label>';
+                var text = '<div class="bar bar-footer bar-balanced"><div class="title">Footer</div></div>';
+                e.originalEvent.dataTransfer.setData('text/plain', text);
+
+                // var backImg = $(e.target).find(".widget:first-child").css("background-image");
+                // backImg = backImg.slice(5,backImg.length-2);
+                // var $img = $("<img src='" + backImg + "'>");
+                // e.originalEvent.dataTransfer.setDragImage($img[0], 0, 0);
+
+                // e.originalEvent.dataTransfer.effectAllowed = "move";
+                return true;
+            });
+        }
+    };
+}])
+
+.directive('finAppFrame', ['$rootScope', '$parse', '$document', '$window', '$compile', function($rootScope, $parse, $document, $window, $compile) {
+    return {
+        restrict: 'A'
+        ,link: function (scope, element, attrs) {
+            element.load(function () {
+                var frameName = element.attr('name');
+                var $body = $(window.frames[frameName].document).find('body');
+                $body.on('dragover', function (e) {
+                    e.preventDefault();
+
+                    return false;
+                });
+                $body.on('drop', function (e) {
+                    var data = e.originalEvent.dataTransfer.getData('text/plain');
+
+                    var target = e.originalEvent.srcElement || e.originalEvent.target;
+                    var $elem = $(data);
+                    $elem.appendTo($(target));
+                });
+
+                // $body.on('click', function (e) {
+                //     var target = e.originalEvent.srcElement || e.originalEvent.target;
+                //     alert($(target).html());
+                // })
+            });
+        }
+    };
+}])
 ;

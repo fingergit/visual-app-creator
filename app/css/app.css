@@ -78,6 +78,20 @@ label{
   text-align: right;
 }
 
+/* Tab条与内容留出一定距离(属性面板中)*/
+.tab-content{
+  padding-top: 4px;
+}
+
+/* 将属性面板中的折叠panel头变小*/
+.form-horizontal .panel-heading{
+  padding: 4px;
+}
+
+.form-horizontal .panel-title{
+  font-size: 14px;
+}
+
 .menu {
   list-style: none;
   border-bottom: 0.1em solid black;

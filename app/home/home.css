@@ -161,3 +161,14 @@ input::-webkit-inner-spin-button{
     margin: 0;
 }
 input[type="number"]{-moz-appearance:textfield;}
+
+.widgeticon{
+    z-index: 1000;
+}
+
+#f-canvas{
+    background: url("../img/skin-iphone.png") center no-repeat;
+    background-size: auto 100%;
+    width: 100%;
+    height: 100%;
+}
