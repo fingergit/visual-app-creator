@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html lang="en" ng-app="myApp" class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html lang="en" ng-app="myApp" class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html lang="en" ng-app="myApp" class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html lang="en" ng-app="myApp" class="no-js"> <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>My AngularJS App</title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="stylesheet" href="bower_components/html5-boilerplate/dist/css/normalize.css">
+  <link rel="stylesheet" href="bower_components/html5-boilerplate/dist/css/main.css">
+  <link rel="stylesheet" href="bower_components/angularjs-color-picker/dist/angularjs-color-picker.css" />
+  <link rel="stylesheet" href="bower_components/angularjs-slider/dist/rzslider.css" />
+  <link rel="stylesheet" href="basejs/ui-switch/angular-ui-switch.css" />
+
+  <link rel="stylesheet" href="basejs/bootstrap-3.3.6/css/bootstrap.css">
+  <link rel="stylesheet" href="css/font-awesome.min.css">
+
+  <link rel="stylesheet" href="css/app.css">
+  <link rel="stylesheet" href="home/home.css">
+  <!--放在自定义css的最后。-->
+  <link rel="stylesheet" href="css/theme-default.css">
+
+  <script src="bower_components/html5-boilerplate/dist/js/vendor/modernizr-2.8.3.min.js"></script>
+</head>
+<body ng-controller="AppCtrl">
+  <!--<ul class="menu">-->
+    <!--<li><a ui-sref="home">Home</a></li>-->
+    <!--<li><a ui-sref="state1">State 1</a></li>-->
+    <!--<li><a ui-sref="state2">State 2</a></li>-->
+  <!--</ul>-->
+  <div ui-view></div>
+
+  <!--[if lt IE 7]>
+      <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+  <![endif]-->
+
+  <!--<div ng-view></div>-->
+
+
+  <!--<div>Angular seed app: v<span app-version></span></div>-->
+
+  <!-- In production use:
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/x.x.x/angular.min.js"></script>
+  -->
+  <script src="basejs/jquery-1.12.4.js"></script>
+  <script src="basejs/jq-minwidth.js"></script>
+  <script src="basejs/abssplitter.js"></script>
+
+  <script src="bower_components/angular/angular.js"></script>
+  <!--<script src="bower_components/angular-route/angular-route.js"></script>-->
+  <script src="basejs/ui-router/angular-ui-router.js"></script>
+  <script src="bower_components/angular-animate/angular-animate.js"></script>
+  <script src="bower_components/angular-touch/angular-touch.js"></script>
+  <script src="basejs/ui-bootstrap/ui-bootstrap-tpls-1.3.3.js"></script>
+  <!--http://ngmodules.org/modules/ngDraggable-->
+  <script src="basejs/ngDragable/ngDraggable.js"></script>
+  <!--http://ruhley.github.io/angular-color-picker/-->
+  <script src="bower_components/tinycolor/tinycolor.js"></script>
+  <script src="bower_components/angularjs-color-picker/dist/angularjs-color-picker.js"></script>
+  <script src="bower_components/angularjs-slider/dist/rzslider.js"></script>
+  <!--https://github.com/xpepermint/angular-ui-switch-->
+  <script src="basejs/ui-switch/angular-ui-switch.js"></script>
+
+  <script src="app.js"></script>
+  <script src="dialog/dialogContent.js"></script>
+  <script src="dialog/messagebox.js"></script>
+  <script src="common/common.js"></script>
+  <script src="controls/controls.js"></script>
+  <script src="home/home.js"></script>
+  <script src="home/toolbar.js"></script>
+  <script src="home/leftpanel.js"></script>
+  <script src="home/rightpanel.js"></script>
+
+  <script src="components/version/version.js"></script>
+  <script src="components/version/version-directive.js"></script>
+  <script src="components/version/interpolate-filter.js"></script>
+  <!--https://github.com/madrobby/keymaster-->
+  <script src="basejs/keymaster.js"></script>
+  <script src="basejs/actionmanager.js"></script>
+  <!--http://benalman.com/projects/jquery-resize-plugin/-->
+  <script src="basejs/jquery.ba-resize.js"></script>
+</body>
+</html>
