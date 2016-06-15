@@ -14,6 +14,7 @@ angular.module('myApp', [
     ,'color.picker'
     ,'ngDraggable'
     ,'uiSwitch'
+    ,'treeControl'
 ])
 .provider("ActionManager", [function () {
     var e = {}, t = [], n = [];
@@ -103,10 +104,32 @@ angular.module('myApp', [
         }
       });
 }])
+.factory('FinProject', function(){
+    var proj = new SFinProject();
+    var group = SFinProject.newGroup('user', proj);
+    var loginPage = SFinProject.newPage('loginPage', proj);
+    var getPassPage = SFinProject.newPage('getPassPage', proj);
+    SFinProject.insertWidgetByIdx(group, proj);
+    SFinProject.insertWidgetByWidget(getPassPage, group);
+    SFinProject.insertWidgetByWidget(loginPage, group, getPassPage, true);
+    var button = SFinProject.newWidget('login', proj, EFinWidgetType.button, null);
+    var getPassButton = SFinProject.newWidget('getPass', proj, EFinWidgetType.button, null);
+    SFinProject.insertWidgetByWidget(button, loginPage);
+    SFinProject.insertWidgetByWidget(getPassButton, loginPage, button, false);
 
-.controller('AppCtrl', ['$scope', '$rootScope', '$uibModal', '$log', 'Hotkeys',
-    function($scope, $rootScope, $uibModal, $log, Hotkeys) {
+
+    return {
+        // 从服务器获取流水项。
+        requestProject: function() {
+            return proj;
+        }
+    }
+})
+
+.controller('AppCtrl', ['$scope', '$rootScope', '$uibModal', '$log', 'Hotkeys', 'FinProject',
+    function($scope, $rootScope, $uibModal, $log, Hotkeys, FinProject) {
         Hotkeys.regist();
+        $rootScope.project = FinProject.requestProject();
 
         // 禁止浏览器自身的ctrl+z执行的undo。
         $(window).bind('keydown', function(evt) {

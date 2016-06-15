@@ -1,0 +1,16 @@
+<div ng-controller="ProjectCtrl" class="match-parent-width">
+
+    <treecontrol class="tree-classic"
+                 tree-model="project.children"
+                 options="treeOptions"
+                 expanded-nodes="expandedNodes"
+                 selected-node="selectedWidget">
+        name: {{node.name}} id {{node.id}}
+    </treecontrol>
+
+    <div>
+        selected: {{selectedWidget.name}}
+    </div>
+    <button type="button" class="btn btn-sm btn-default" ng-click="addWidget(e)">添加Widget</button>
+    <button type="button" class="btn btn-sm btn-default" ng-click="delWidget(e)">删除Widget</button>
+</div>

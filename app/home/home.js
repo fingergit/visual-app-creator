@@ -65,6 +65,13 @@ angular.module('myApp.home',['myApp.home.toolbar','myApp.home.leftpanel','myApp.
     };
 })
 
+.directive('finProjectPanel', function() {
+    return {
+        restrict: 'E'
+        ,templateUrl: './home/projectpanel.html'
+    };
+})
+
 .directive('finWidgetPanel', function() {
     return {
         restrict: 'E'

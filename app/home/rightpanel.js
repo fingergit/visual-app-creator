@@ -48,29 +48,6 @@ angular.module('myApp.home.rightpanel',[])
     $scope.onBtnTest = function () {
     };
 
-    function ValueAction(name, obj, field, oldValue, newValue){
-        Action.call(this, name, obj, field, oldValue, newValue);
-    }
-    ValueAction.prototype=new Action();
-    ValueAction.prototype.constructor=ValueAction;
-
-    ValueAction.prototype.do = function(isRedo){
-        this.obj[this.field] = this.newValue;
-        this.obj.undo = false;
-        this.obj.redo = false;
-        if (isRedo){
-            this.obj.redo = true;
-            $scope.$apply();
-        }
-    };
-
-    ValueAction.prototype.undo = function(){
-        this.obj[this.field] = this.oldValue;
-        this.obj.undo = true;
-        this.obj.redo = false;
-        $scope.$apply();
-    };
-
     // $scope.$watch('propText.color',function(newValue,oldValue, scope){
     //     valueChange(newValue, oldValue, scope, "文字颜色", scope.propText, "color");
     // });
@@ -143,7 +120,7 @@ angular.module('myApp.home.rightpanel',[])
             obj.redo = false;
             return;
         }
-        var action = new ValueAction(name, obj, field, oldValue, newValue);
+        var action = new ValueAction(name, obj, field, oldValue, newValue, $scope);
         ActionManager.addAction(action);
     }
 
