@@ -8,6 +8,14 @@ var EFinWidgetType = {
     ,button: 'button'
 };
 
+var EFinProjectType = {
+    blank: {type: 'blank', html: '<ion-pane>    <ion-header-bar class="bar-stable"><h1 class="title">Ionic Blank Starter</h1>    </ion-header-bar>    <ion-content>    </ion-content></ion-pane>'}
+};
+
+var EFinPageTemplate = {
+    blank: {type: 'blank', html: '<ion-view title="{{page.title}}" id="{{page.id}}" class=" "><ion-content padding="true" class="has-header"></ion-content></ion-view>'}
+};
+
 /**
  * 定义Widget属性
  * @param text 文本属性
@@ -31,19 +39,24 @@ function SFinWidget(name, type, id, attr) {
     this.id = id;
     this.attr = attr;
     this.text = null;
-    this.parent = null;
     this.children = [];
 }
 
 function SFinTheme(){
 }
 
-function SFinProject(){
+function SFinProject(name, type){
+    this.classId = 'FinProject';
+    this.type = type;
+    this.name = name;
     this.theme = null;
     this.children = [];
 
     this.nextId = {};
     for (var idx in EFinWidgetType){
+        if (!EFinWidgetType.hasOwnProperty(idx)){
+            continue;
+        }
         this.nextId[EFinWidgetType[idx]] = 1;
     }
 }
@@ -52,6 +65,9 @@ SFinProject.insertWidgetByWidget = function (widget, parent, targetWidget, befor
     var insertIdx = -1;
     if (targetWidget !== null && targetWidget !== undefined){
         for (var idx in parent.children){
+            if (!parent.children.hasOwnProperty(idx)){
+                continue;
+            }
             var child = parent.children[idx];
             if (targetWidget === child){
                 insertIdx = idx;
@@ -75,7 +91,6 @@ SFinProject.insertWidgetByIdx = function (widget, parent, idx, before) {
         return;
     }
 
-    widget.parent = parent;
     if (idx === undefined || idx === -1){
         parent.children.push(widget);
     }
@@ -88,40 +103,35 @@ SFinProject.insertWidgetByIdx = function (widget, parent, idx, before) {
 /**
  * 从父对象中删除widget。
  * @param widget
+ * @param parent
  */
-SFinProject.removeWidget = function (widget) {
+SFinProject.removeWidget = function (widget, parent) {
     if (!widget){
         return;
     }
 
-    var ary = [];
-    if (widget.parent){
-        ary = widget.parent.children;
-    }
-    else{
-        return;
-    }
+    var ary = parent.children;
 
     for (var idx in ary){
+        if (!ary.hasOwnProperty(idx)){
+            continue;
+        }
         var child = ary[idx];
         if (child === widget){
-            child.parent = null;
             ary.splice(idx, 1);
             break;
         }
     }
 };
 
-SFinProject.getIndexInParent = function (widget) {
-    if (widget.parent){
-        ary = widget.parent.children;
-    }
-    else{
-        return;
-    }
+SFinProject.getIndexInParent = function (widget, parent) {
+    var ary = parent.children;
 
     var retIdx = -1;
     for (var idx in ary){
+        if (!ary.hasOwnProperty(idx)){
+            continue;
+        }
         var child = ary[idx];
         if (child === widget){
             retIdx = idx;
@@ -132,65 +142,73 @@ SFinProject.getIndexInParent = function (widget) {
     return retIdx;
 };
 
-SFinProject.prototype.toJson = function () {
-    // 先将父对象属性去掉。
-    this.addOrRemoveParent(null, true);
+SFinProject.toJson = function (project) {
     // var jsonStr = JSON.stringify(this);
-    var jsonStr = angular.toJson(this); // 防止字符串中出现$$hashkey。
-    this.addOrRemoveParent(null, false);
-
-    return jsonStr;
-};
-
-/**
- * 递归将所有widget的parent属性添加或去除。
- * @param parent 父widget，如果为null，则为project。
- * @param remove
- */
-SFinProject.prototype.addOrRemoveParent = function (parent, remove) {
-    if (!parent){
-        parent = this;
-    }
-
-    for (var idx in parent.children){
-        var child = parent.children[idx];
-        if (remove){
-            child.parent = null;
-        }
-        else{
-            child.parent = parent;
-        }
-
-        this.addOrRemoveParent(child, remove);
-    }
+    return angular.toJson(project); // 防止字符串中出现$$hashkey。
 };
 
 SFinProject.fromJson = function (jsonStr) {
-    var project = JSON.parse(jsonStr);
-    project.addOrRemoveParent(null, false);
-    return project;
+    return JSON.parse(jsonStr);
 };
 
 SFinProject.newGroup = function (name, proj) {
     var id = EFinWidgetType.group + proj.nextId[EFinWidgetType.group];
     proj.nextId[EFinWidgetType.group] ++;
 
-    var group = new SFinWidget(name, EFinWidgetType.group, id, null);
-    return group;
+    return new SFinWidget(name, EFinWidgetType.group, id, null);
 };
 
 SFinProject.newPage = function (name, proj) {
     var id = EFinWidgetType.page + proj.nextId[EFinWidgetType.page];
     proj.nextId[EFinWidgetType.page] ++;
 
-    var page = new SFinWidget(name, EFinWidgetType.page, id, null);
-    return page;
+    return new SFinWidget(name, EFinWidgetType.page, id, null);
 };
 
 SFinProject.newWidget = function (name, proj, type, attr) {
     var id = type + proj.nextId[type];
     proj.nextId[type] ++;
 
-    var widget = new SFinWidget(name, type, id, attr);
-    return widget;
+    return new SFinWidget(name, type, id, attr);
+};
+
+SFinProject.findParent = function (widget, root) {
+    var parent = null;
+    for (var idx in root.children){
+        if (!root.children.hasOwnProperty(idx)){
+            continue;
+        }
+        var item = root.children[idx];
+        if (item === widget){
+            parent = root;
+            break;
+        }
+        else{
+            parent = SFinProject.findParent(widget, item);
+            if (null != parent){
+                break;
+            }
+        }
+    }
+
+    return parent;
+};
+
+SFinProject.getAllPages = function (root) {
+    var pages = [];
+    for (var page in root.children){
+        if (!root.children.hasOwnProperty(page)){
+            continue;
+        }
+        var item = root.children[page];
+        if (item.type === EFinWidgetType.page){
+            pages.push(item);
+        }
+        else if (item.type == EFinWidgetType.group){
+            var subpages = SFinProject.getAllPages(item);
+            pages = pages.concat(subpages);
+        }
+    }
+
+    return pages;
 };

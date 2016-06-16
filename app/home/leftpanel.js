@@ -39,21 +39,31 @@ angular.module('myApp.home.leftpanel',[])
         }
     };
 
+    // 哪些节点处于展开状态。
     $scope.expandedNodes = [];
-    for (var idx in $rootScope.project.children){
+    var projChildren = $rootScope.project.children;
+    for (var idx in projChildren){
+        if (!projChildren.hasOwnProperty(idx)){
+            continue;
+        }
         var child = $rootScope.project.children[idx];
-        $scope.expandedNodes.push(child);
-        for (var idx2 in child.children){
-            $scope.expandedNodes.push(child.children[idx2]);
+        if (child.children.length > 0){
+            $scope.expandedNodes.push(child);
+            for (var idx2 in child.children){
+                if (!child.children.hasOwnProperty(idx2)){
+                    continue;
+                }
+                $scope.expandedNodes.push(child.children[idx2]);
+            }
         }
     }
 
-    $scope.selectNode = function(num) {
-        $scope.selectedWidget = $rootScope.project.children[num];
-    };
-    $scope.clearSelected = function() {
-        $scope.selectedWidget = undefined;
-    };
+    $scope.$watch('selectedWidget', function (newValue,oldValue, scope) {
+        if (newValue === oldValue){
+            return;
+        }
+        $scope.selectedWidgetParent = SFinProject.findParent($scope.selectedWidget, $rootScope.project);
+    });
 
     function AddWidgetAction(name, widget, parent, targetWidget, before){
         Action.call(this, name);
@@ -67,36 +77,44 @@ angular.module('myApp.home.leftpanel',[])
 
     AddWidgetAction.prototype.do = function(isRedo){
         SFinProject.insertWidgetByWidget(this.widget, this.parent, this.targetWidget, this.before);
+        $scope.selectedWidget = this.widget;
         if (isRedo){
-            $scope.$apply();
+            $rootScope.safeApply();
+        }
+
+        if (!$.inArray(this.parent, $scope.expandedNodes)){
+            $scope.expandedNodes.push(this.parent);
         }
     };
 
     AddWidgetAction.prototype.undo = function(){
-        SFinProject.removeWidget(this.widget);
-        $scope.$apply();
+        SFinProject.removeWidget(this.widget, this.parent);
+        $scope.selectedWidget = null;
+        $rootScope.safeApply();
     };
 
-    function DelWidgetAction(name, widget){
+    function DelWidgetAction(name, widget, parent){
         Action.call(this, name);
         this.widget = widget;
-        this.parent = widget.parent;
-        this.idx = SFinProject.getIndexInParent(widget);
+        this.parent = parent;
+        this.idx = SFinProject.getIndexInParent(widget, parent);
         this.before = true;
     }
     DelWidgetAction.prototype=new Action();
     DelWidgetAction.prototype.constructor=DelWidgetAction;
 
     DelWidgetAction.prototype.do = function(isRedo){
-        SFinProject.removeWidget(this.widget);
+        SFinProject.removeWidget(this.widget, this.parent);
+        $scope.selectedWidget = null;
         if (isRedo){
-            $scope.$apply();
+            $rootScope.safeApply();
         }
     };
 
     DelWidgetAction.prototype.undo = function(){
         SFinProject.insertWidgetByWidget(this.widget, this.parent, this.targetWidget, this.before);
-        $scope.$apply();
+        $scope.selectedWidget = this.widget;
+        $rootScope.safeApply();
     };
 
     $scope.idx = 1;
@@ -115,7 +133,7 @@ angular.module('myApp.home.leftpanel',[])
             return;
         }
 
-        var action = new DelWidgetAction('删除控件', $scope.selectedWidget);
+        var action = new DelWidgetAction('删除控件', $scope.selectedWidget, $scope.selectedWidgetParent);
         ActionManager.addAction(action);
     };
 

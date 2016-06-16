@@ -1,0 +1,17 @@
+<div class="modal-header">
+    <h3 class="modal-title">{{input.title}}</h3>
+</div>
+<div class="modal-body">
+    <div class="form-horizontal">
+        <div class="form-group">
+            <label class="col-sm-4 control-label input-sm">{{input.label}}</label>
+            <div class="input-group col-sm-8">
+                <input name="{{input.name}}" type="{{input.type}}" ng-model="input.value" class="form-control input-sm" autofocus="autofocus">
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-primary" type="button" ng-click="ok()" ng-disabled="!(input.value)">确定</button>
+    <button class="btn btn-warning" type="button" ng-click="cancel()">取消</button>
+</div>

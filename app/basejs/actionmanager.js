@@ -98,6 +98,14 @@ function ActionManager() {
     ActionManager.prototype.canRedo = function () {
         return this.redoList.length > 0;
     };
+
+    /**
+     * 清空undo/redo列表
+     */
+    ActionManager.prototype.clear = function () {
+       this.undoList.length = 0;
+       this.redoList.length = 0;
+    };
 }
 
 var g_result = 0;

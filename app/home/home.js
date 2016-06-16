@@ -9,7 +9,7 @@ angular.module('myApp.home',['myApp.home.toolbar','myApp.home.leftpanel','myApp.
   // });
 }])
 
-.controller('HomeCtrl', ['$scope', '$rootScope', '$window', function($scope, $rootScope, $window) {
+.controller('HomeCtrl', ['$scope', '$rootScope', function($scope, $rootScope) {
     var splitter = new FinSplitter();
     splitter.init();
 
@@ -122,12 +122,14 @@ angular.module('myApp.home',['myApp.home.toolbar','myApp.home.leftpanel','myApp.
     };
 }])
 
-.directive('finAppFrame', ['$rootScope', '$parse', '$document', '$window', '$compile', function($rootScope, $parse, $document, $window, $compile) {
+.directive('finAppFrame', ['$rootScope', '$parse', '$document', '$window', '$compile', 'FinProjectRender'
+    , function($rootScope, $parse, $document, $window, $compile, FinProjectRender) {
     return {
         restrict: 'A'
         ,link: function (scope, element, attrs) {
             element.load(function () {
                 var frameName = element.attr('name');
+                var appFrame = window.frames[frameName];
                 var $body = $(window.frames[frameName].document).find('body');
                 $body.on('dragover', function (e) {
                     e.preventDefault();
@@ -141,6 +143,8 @@ angular.module('myApp.home',['myApp.home.toolbar','myApp.home.leftpanel','myApp.
                     var $elem = $(data);
                     $elem.appendTo($(target));
                 });
+                
+                FinProjectRender.render($rootScope.project, $body);
 
                 // $body.on('click', function (e) {
                 //     var target = e.originalEvent.srcElement || e.originalEvent.target;

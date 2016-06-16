@@ -1,11 +1,12 @@
 <div ng-controller="ProjectCtrl" class="match-parent-width">
 
-    <treecontrol class="tree-classic"
+    <treecontrol class="tree-light"
                  tree-model="project.children"
                  options="treeOptions"
                  expanded-nodes="expandedNodes"
                  selected-node="selectedWidget">
-        name: {{node.name}} id {{node.id}}
+        <img class="treeic" src="{{'./img/ic_tree_' + node.type + '_n.png'}}">
+        {{node.name}}
     </treecontrol>
 
     <div>

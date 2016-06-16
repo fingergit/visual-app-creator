@@ -12,7 +12,8 @@ angular.module('myApp.home.rightpanel',[])
 .controller('RightPanelCtrl', ['$scope', function($scope) {
 }])
 
-.controller('PropTextCtrl', ['$scope', '$rootScope','$window', '$log', 'ActionManager', function($scope, $rootScope, $window, $log, ActionManager) {
+.controller('PropTextCtrl', ['$scope', '$rootScope','$window', '$log', 'ActionManager', 'FinProjectRender'
+    ,function($scope, $rootScope, $window, $log, ActionManager, FinProjectRender) {
 
     // $scope.propText = {
     //     align: {desc: $rootScope.propTextDesc.align, value: 'center'}
@@ -141,7 +142,7 @@ angular.module('myApp.home.rightpanel',[])
                     $scope.$watch(objVarName + '.' + item + '.value', function(newValue,oldValue, scope){
                         valueChange(newValue, oldValue, scope, actionName, propName, changeObj, "value");
                     });
-                    $log.debug("now watch: " + objVarName + '.' + item + '.value');
+                    // $log.debug("now watch: " + objVarName + '.' + item + '.value');
                 })(actionName, item, changeObj);
             }
         }

@@ -32,6 +32,8 @@ angular.module('myApp', [
                     actionMgr.undo();
                 }, redo: function () {
                     actionMgr.redo();
+                }, clear: function () {
+                    actionMgr.clear();
                 }
             }
         }]
@@ -104,8 +106,10 @@ angular.module('myApp', [
         }
       });
 }])
-.factory('FinProject', function(){
-    var proj = new SFinProject();
+.factory('FinProject', ["ActionManager", function(ActionManager){
+    var proj = new SFinProject('first', EFinProjectType.blank.type);
+    var projList = [];
+
     var group = SFinProject.newGroup('user', proj);
     var loginPage = SFinProject.newPage('loginPage', proj);
     var getPassPage = SFinProject.newPage('getPassPage', proj);
@@ -119,18 +123,197 @@ angular.module('myApp', [
 
 
     return {
-        // 从服务器获取流水项。
-        requestProject: function() {
+        /**
+         * 新建工程
+         */
+        newProject: function (name) {
+            proj = new SFinProject(name, EFinProjectType.blank.type);
+            ActionManager.clear();
+
             return proj;
         }
-    }
-})
 
-.controller('AppCtrl', ['$scope', '$rootScope', '$uibModal', '$log', 'Hotkeys', 'FinProject',
-    function($scope, $rootScope, $uibModal, $log, Hotkeys, FinProject) {
+        // 从服务器获取流水项。
+        ,requestProject: function() {
+            return proj;
+        }
+
+        /**
+         * 打开项目。
+         * @param 项目名称。
+         * @returns {boolean} 成功，返回打开的project，失败，返回false。
+         * @param name
+         * @returns {*}
+         */
+        ,openProject: function (name) {
+            if (!name){
+                return false;
+            }
+
+            var jsonStr = window.localStorage['proj-' + name];
+            if (!jsonStr){
+                return false;
+            }
+
+            var newProj = SFinProject.fromJson(jsonStr);
+            if (!newProj || !newProj.hasOwnProperty('classId')){
+                return false;
+            }
+
+            // 先保存当前项目。
+            this.saveProject();
+            proj = newProj;
+            ActionManager.clear();
+
+            return proj;
+        }
+
+        /**
+         * 保存项目。
+         * @returns {boolean} 成功返回true。
+         */
+        ,saveProject: function () {
+            if (!proj){
+                return false;
+            }
+
+            window.localStorage['proj-' + proj.name] = SFinProject.toJson(proj);
+            return true;
+        }
+
+        /**
+         * 另存为项目。
+         * @returns {boolean} 成功返回true。
+         */
+        ,saveAsProject: function (name) {
+            if (!proj){
+                return false;
+            }
+            if (this.projectExist(name)){
+                return false;
+            }
+
+            this.saveProject(); // 先保存当前项目。
+
+            if (name === proj.name){
+                return true;
+            }
+
+            proj.name = name;
+            window.localStorage['proj-' + name] = SFinProject.toJson(proj);
+            return true;
+        }
+
+        /**
+         * 判断项目文件是否存在
+         * @param name 项目名称。
+         * @returns {boolean} 成功true。
+         */
+        ,projectExist: function (name) {
+            var exist = false;
+            for (var idx in projList){
+                if (!projList.hasOwnProperty(idx)){
+                    continue;
+                }
+                var item = projList[idx];
+                if (item.name === name){
+                    exist = true;
+                    break;
+                }
+            }
+            return exist;
+        }
+        ,projectList: function () {
+            var storage = window.localStorage;
+            var projNameList = [];
+            for (var item in storage){
+                if (!storage.hasOwnProperty(item)){
+                    continue;
+                }
+                if (item.substring(0, 5) === 'proj-'){
+                    projNameList.push(item.substring(5));
+                }
+            }
+
+            return projNameList;
+        }
+    }
+}])
+.factory('FinProjectRender', ["ActionManager", '$compile', '$rootScope', function(ActionManager, $compile, $rootScope){
+    return {
+        /**
+         * 新建工程
+         */
+        render: function (project, $htmlBody) {
+            if (!$htmlBody){
+                return;
+            }
+            var projectHtml = EFinProjectType[project.type].html;
+            var totalHtml = projectHtml;
+            var totalRouteCode = '';
+            var defPage = null;
+
+            var pages = SFinProject.getAllPages(project);
+            for (var idx in pages){
+                if (!pages.hasOwnProperty(idx)){
+                    continue;
+                }
+                var item = pages[idx];
+                var pageHtml = EFinPageTemplate.blank.html;
+                var pageHtml = '<script id="templates/{{page.id}}.html" type="text/ng-template">' + pageHtml + '</script>';
+                var routeCode = ".state('{{page.id}}', {\
+                url: '/{{page.id}}', \
+                    templateUrl: 'templates/{{page.id}}.html' \
+            })";
+
+                if (!defPage){
+                    defPage = "/" + item.id;
+                }
+
+                var template = Handlebars.compile(pageHtml);
+                var context = {
+                    page: {title: "我是标题",
+                        id: item.id}
+                };
+                totalHtml += template(context);
+
+                template = Handlebars.compile(routeCode);
+                totalRouteCode += template(context);
+            }
+
+            var tpl = document.getElementById('pageRoute');
+            var source = tpl.innerHTML;
+            var totalRouteCode2 = Handlebars.compile(source);
+            var context2 = {
+                state: {
+                    pageList: totalRouteCode,
+                    defPage: defPage
+                }
+            };
+            totalRouteCode2 = totalRouteCode2(context2);
+
+            var okHtml = $compile(totalHtml + "<script>" + totalRouteCode2 + "</script>")($rootScope);
+            $htmlBody.append(okHtml.text());
+        }
+    }
+}])
+
+.controller('AppCtrl', ['$scope', '$rootScope', '$uibModal', '$log', 'Hotkeys', 'FinProject', 'ActionManager', 'FinProjectRender',
+    function($scope, $rootScope, $uibModal, $log, Hotkeys, FinProject, ActionManager, FinProjectRender) {
         Hotkeys.regist();
         $rootScope.project = FinProject.requestProject();
 
+        $rootScope.safeApply = function(fn) {
+            var phase = this.$root.$$phase;
+            if (phase == '$apply' || phase == '$digest') {
+                if (fn && (typeof(fn) === 'function')) {
+                    fn();
+                }
+            } else {
+                this.$apply(fn);
+            }
+        };
+        
         // 禁止浏览器自身的ctrl+z执行的undo。
         $(window).bind('keydown', function(evt) {
             if((evt.ctrlKey || evt.metaKey) && String.fromCharCode(evt.which).toLowerCase() == 'z') {
@@ -138,7 +321,69 @@ angular.module('myApp', [
             }
         });
 
-        $scope.confirm = function (content,title) {
+        $rootScope.newProject = function () {
+            $rootScope.showInputDialog('新建项目', '项目名称', 'text', '', function (value) {
+                var newProj = FinProject.newProject(value);
+                if (!newProj){
+                    $rootScope.alert("新建项目失败");
+                    return;
+                }
+                $rootScope.project = newProj;
+                // FinProjectRender.render(newProj);
+            });
+        };
+
+        $rootScope.openProject = function () {
+            $rootScope.showProjectList(function (name) {
+               if (!name){
+                   return;
+               }
+
+                var newProj = FinProject.openProject(name);
+               if (!newProj){
+                   $rootScope.alert("打开项目失败");
+                   return;
+               }
+                $rootScope.project = newProj;
+            });
+        };
+
+        $rootScope.saveProject = function () {
+            FinProject.saveProject();
+        };
+
+        $rootScope.saveAsProject = function () {
+            $rootScope.showInputDialog('另存为...', '项目名称', 'text', '', function (value) {
+                var newProj = FinProject.saveAsProject(value);
+                if (!newProj){
+                    $rootScope.alert("另存项目失败");
+                    return;
+                }
+                $rootScope.project = newProj;
+            });
+        };
+
+        $rootScope.undo = function () {
+            ActionManager.undo();
+        };
+
+        $rootScope.redo = function () {
+            ActionManager.redo();
+        };
+
+        $rootScope.canUndo = function () {
+            return ActionManager.canUndo();
+        };
+
+        $rootScope.canRedo = function () {
+            return ActionManager.canRedo();
+        };
+
+        $rootScope.defaultEnable = function () {
+            return true;
+        };
+
+        $rootScope.confirm = function (content,title) {
             var modalInstance = $uibModal.open({
                 animation: true,
                 templateUrl: './dialog/messagebox.html',
@@ -161,23 +406,91 @@ angular.module('myApp', [
             }, function () {
                 $log.info('Cancel');
             });
-            // var modalInstance = $uibModal.open({
-            //     animation: true,
-            //     templateUrl: './dialog/dialogContent.html',
-            //     controller: 'DialogCtrl',
-            //     size: '',
-            //     resolve: {
-            //         items: function () {
-            //             return $scope.items;
-            //         }
-            //     }
-            // });
-            //
-            // modalInstance.result.then(function (selectedItem) {
-            //     $scope.selected = selectedItem;
-            // }, function () {
-            //     $log.info('Modal dismissed at: ' + new Date());
-            // });
+        };
+
+        $rootScope.alert = function (content,title) {
+            var modalInstance = $uibModal.open({
+                animation: true,
+                templateUrl: './dialog/alertbox.html',
+                size: '',
+                controller: function ($uibModalInstance, $scope) {
+                    $scope.dlgParam = {
+                        title: title||"提示"
+                        , content: content
+                    };
+
+                    $scope.dlgTitle = title||"提示";
+                    $scope.dlgContent = content||"world";
+                    $scope.ok = function () {
+                        $uibModalInstance.close();
+                        $scope.dlgParam = null;
+                    };
+
+                    $scope.cancel = function () {
+                        $uibModalInstance.dismiss();
+                        $scope.dlgParam = null;
+                    };
+                }
+            });
+
+            modalInstance.result.then(function () {
+            }, function () {
+            });
+        };
+
+        $rootScope.showInputDialog = function (title, label, type, value, okCallback) {
+            var modalInstance = $uibModal.open({
+                animation: true,
+                templateUrl: './dialog/inputdialog.html',
+                size: '',
+                controller: function ($uibModalInstance, $scope) {
+                    $rootScope.input = {
+                        title: title
+                        , label: label
+                        , type: type
+                        , value: value
+                    };
+
+                    $scope.ok = function () {
+                        $uibModalInstance.close();
+                    };
+
+                    $scope.cancel = function () {
+                        $uibModalInstance.dismiss();
+                    };
+                }
+            });
+
+            modalInstance.result.then(function () {
+                okCallback($rootScope.input.value);
+                $rootScope.input = null;
+            }, function () {
+                $rootScope.input = null;
+            });
+        };
+
+        $rootScope.showProjectList = function (okCallback) {
+            var modalInstance = $uibModal.open({
+                animation: true,
+                templateUrl: './dialog/projectlist.html',
+                size: '',
+                controller: function ($uibModalInstance, $scope) {
+                    $scope.theProjList = FinProject.projectList();
+
+                    $scope._openProject = function (name) {
+                        $uibModalInstance.close();
+                        okCallback(name);
+                    };
+
+                    $scope.cancel = function () {
+                        $uibModalInstance.dismiss();
+                    };
+                }
+            });
+
+            modalInstance.result.then(function () {
+            }, function () {
+            });
         };
 
         initProps();
