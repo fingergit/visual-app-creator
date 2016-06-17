@@ -9,6 +9,7 @@ angular.module('myApp', [
     ,'myApp.home'
     ,'myApp.constrols'
     ,'ngAnimate'
+    ,'ngResource'
     ,'ui.bootstrap'
     ,'rzModule'
     ,'color.picker'
@@ -299,7 +300,8 @@ angular.module('myApp', [
 }])
 
 .controller('AppCtrl', ['$scope', '$rootScope', '$uibModal', '$log', 'Hotkeys', 'FinProject', 'ActionManager', 'FinProjectRender',
-    function($scope, $rootScope, $uibModal, $log, Hotkeys, FinProject, ActionManager, FinProjectRender) {
+    '$resource','$http'
+    ,function($scope, $rootScope, $uibModal, $log, Hotkeys, FinProject, ActionManager, FinProjectRender, $resource,$http) {
         Hotkeys.regist();
         $rootScope.project = FinProject.requestProject();
 
@@ -322,6 +324,27 @@ angular.module('myApp', [
         });
 
         $rootScope.newProject = function () {
+            // 使用resource方法
+            // var User = $resource('/visualapp/index.php/index/frame', {userId:'@id'});
+            // User.save({id: '123'}, {a: 'a'}, function (user) {
+            //     console.log("success");
+            // }, function (e) {
+            //     console.log('error');
+            // });
+
+            // 使用$http方法
+            $http({
+                method: 'POST',
+                url: '/visualapp/index.php/index/frame',
+                data: {a: 'a'},
+                // headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+            }).success(function(data,header,config,status){
+                $rootScope.frameBody.append("<div>" + data.name + "</div>");
+            }).error(function(data,header,config,status){
+            });
+
+            return;
+
             $rootScope.showInputDialog('新建项目', '项目名称', 'text', '', function (value) {
                 var newProj = FinProject.newProject(value);
                 if (!newProj){

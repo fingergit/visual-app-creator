@@ -14,6 +14,7 @@
   <link rel="stylesheet" href="bower_components/html5-boilerplate/dist/css/main.css">
   <link rel="stylesheet" href="bower_components/angularjs-color-picker/dist/angularjs-color-picker.css" />
   <link rel="stylesheet" href="bower_components/angularjs-slider/dist/rzslider.css" />
+  <link rel="stylesheet" href="bower_components/angular-tree-control/css/tree-control.css" />
   <link rel="stylesheet" href="basejs/ui-switch/angular-ui-switch.css" />
 
   <link rel="stylesheet" href="basejs/bootstrap-3.3.6/css/bootstrap.css">
@@ -47,14 +48,17 @@
   <script src="//ajax.googleapis.com/ajax/libs/angularjs/x.x.x/angular.min.js"></script>
   -->
   <script src="basejs/jquery-1.12.4.js"></script>
+  <script src="basejs/handlebars4.0.5.js"></script>
   <script src="basejs/jq-minwidth.js"></script>
   <script src="basejs/abssplitter.js"></script>
+  <script src="basejs/fin-project.js"></script>
 
   <script src="bower_components/angular/angular.js"></script>
   <!--<script src="bower_components/angular-route/angular-route.js"></script>-->
   <script src="basejs/ui-router/angular-ui-router.js"></script>
   <script src="bower_components/angular-animate/angular-animate.js"></script>
   <script src="bower_components/angular-touch/angular-touch.js"></script>
+  <script src="bower_components/angular-resource/angular-resource.js"></script>
   <script src="basejs/ui-bootstrap/ui-bootstrap-tpls-1.3.3.js"></script>
   <!--http://ngmodules.org/modules/ngDraggable-->
   <script src="basejs/ngDragable/ngDraggable.js"></script>
@@ -62,6 +66,8 @@
   <script src="bower_components/tinycolor/tinycolor.js"></script>
   <script src="bower_components/angularjs-color-picker/dist/angularjs-color-picker.js"></script>
   <script src="bower_components/angularjs-slider/dist/rzslider.js"></script>
+  <!--https://github.com/wix/angular-tree-control-->
+  <script src="bower_components/angular-tree-control/angular-tree-control.js"></script>
   <!--https://github.com/xpepermint/angular-ui-switch-->
   <script src="basejs/ui-switch/angular-ui-switch.js"></script>
 
@@ -83,5 +89,18 @@
   <script src="basejs/actionmanager.js"></script>
   <!--http://benalman.com/projects/jquery-resize-plugin/-->
   <script src="basejs/jquery.ba-resize.js"></script>
+
+  <script id="pageRoute" type="text/x-handlebars-template">
+    angular.module('app.routes', [])
+    .config(function($stateProvider, $urlRouterProvider) {
+    // Ionic uses AngularUI Router which uses the concept of states
+    // Learn more here: https://github.com/angular-ui/ui-router
+    // Set up the various states which the app can be in.
+    // Each state's controller can be found in controllers.js
+    $stateProvider{{{state.pageList}}};
+    $urlRouterProvider.otherwise('{{{state.defPage}}}')
+    });
+  </script>
+
 </body>
 </html>

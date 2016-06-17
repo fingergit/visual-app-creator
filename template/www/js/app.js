@@ -20,5 +20,7 @@ angular.module('app', ['ionic'])
     if(window.StatusBar) {
       StatusBar.styleDefault();
     }
+    var injector = angular.element(document).injector();
+    console.log("frame injector: " + injector);
   });
 });

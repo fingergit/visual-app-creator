@@ -143,8 +143,9 @@ angular.module('myApp.home',['myApp.home.toolbar','myApp.home.leftpanel','myApp.
                     var $elem = $(data);
                     $elem.appendTo($(target));
                 });
-                
-                FinProjectRender.render($rootScope.project, $body);
+
+                $rootScope.frameBody = $body;
+                // FinProjectRender.render($rootScope.project, $body);
 
                 // $body.on('click', function (e) {
                 //     var target = e.originalEvent.srcElement || e.originalEvent.target;

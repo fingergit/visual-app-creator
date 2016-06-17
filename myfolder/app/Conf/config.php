@@ -66,6 +66,8 @@ return array(
 	'URL_ROUTE_RULES' 		=> array(
 		// 'index' => 'Index/Index/index', //注意：不能这样定义，否则会导致indexaction中的函数都找不到正确的url。
 		'index/image' 			=> 'Index/Index/image',
+		'index/frame' 			=> 'Index/Index/frame',
+		'index/appframe' 			=> 'Index/Index/appframe',
 	),
 );
 ?>
