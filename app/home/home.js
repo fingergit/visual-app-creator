@@ -107,8 +107,9 @@ angular.module('myApp.home',['myApp.home.toolbar','myApp.home.leftpanel','myApp.
             element.attr('draggable', true);
             element.on('dragstart', function (e) {
                 // var text = '<label class="toggle"><input type="checkbox"><div class="track"><div class="handle"></div></div></label>';
-                var text = '<div class="bar bar-footer bar-balanced"><div class="title">Footer</div></div>';
-                e.originalEvent.dataTransfer.setData('text/plain', text);
+                var target = e.originalEvent.srcElement || e.originalEvent.target;
+                var type = $(target).data('widget-type');
+                e.originalEvent.dataTransfer.setData('text/plain', angular.toJson(EFinProjWidgetType[type]));
 
                 // var backImg = $(e.target).find(".widget:first-child").css("background-image");
                 // backImg = backImg.slice(5,backImg.length-2);
@@ -122,8 +123,8 @@ angular.module('myApp.home',['myApp.home.toolbar','myApp.home.leftpanel','myApp.
     };
 }])
 
-.directive('finAppFrame', ['$rootScope', '$parse', '$document', '$window', '$compile', 'FinProjectRender'
-    , function($rootScope, $parse, $document, $window, $compile, FinProjectRender) {
+.directive('finAppFrame', ['$rootScope', '$parse', '$document', '$window', '$compile', 'FinProjectRender', 'ActionManager'
+    , function($rootScope, $parse, $document, $window, $compile, FinProjectRender, ActionManager) {
     return {
         restrict: 'A'
         ,link: function (scope, element, attrs) {
@@ -137,11 +138,20 @@ angular.module('myApp.home',['myApp.home.toolbar','myApp.home.leftpanel','myApp.
                     return false;
                 });
                 $body.on('drop', function (e) {
-                    var data = e.originalEvent.dataTransfer.getData('text/plain');
+                    var widgetType = e.originalEvent.dataTransfer.getData('text/plain');
+                    widgetType = JSON.parse(widgetType);
 
                     var target = e.originalEvent.srcElement || e.originalEvent.target;
-                    var $elem = $(data);
-                    $elem.appendTo($(target));
+                    // var $elem = $(widgetType.html);
+                    // $elem.appendTo($(target));
+                    var okHtml = $compile(widgetType.html)($rootScope);
+                    $(target).append($(okHtml));
+
+
+                    var newBtn = SFinProject.newWidget('added' + $rootScope.idx, $rootScope.project, widgetType, widgetType.isContainer);
+                    var action = new AddWidgetAction($rootScope, '添加控件', newBtn, $rootScope.selectedElem);
+                    ActionManager.addAction(action);
+                    $rootScope.idx ++;
                 });
 
                 $rootScope.frameBody = $body;

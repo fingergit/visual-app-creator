@@ -4,13 +4,13 @@
                  tree-model="project.children"
                  options="treeOptions"
                  expanded-nodes="expandedNodes"
-                 selected-node="selectedWidget">
+                 selected-node="selectedElem">
         <img class="treeic" src="{{'./img/ic_tree_' + node.type + '_n.png'}}">
         {{node.name}}
     </treecontrol>
 
     <div>
-        selected: {{selectedWidget.name}}
+        selected: {{selectedElem.name}}
     </div>
     <button type="button" class="btn btn-sm btn-default" ng-click="addWidget(e)">添加Widget</button>
     <button type="button" class="btn btn-sm btn-default" ng-click="delWidget(e)">删除Widget</button>

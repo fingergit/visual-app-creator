@@ -21,16 +21,10 @@
 
     <!-- your app's js -->
     <script src="__PUBLIC__/template/js/app.js"></script>
-    <script>
-        function getAngular() {
-          return angular;
-        }
-    </script>
 
 
   </head>
-  <body ng-app="app">
-
+  <body ng-app="app" ng-controller="AppCtrl">
     <ion-pane>
       <ion-header-bar class="bar-stable">
         <h1 class="title">Ionic Blank Starter</h1>
@@ -39,4 +33,6 @@
       </ion-content>
     </ion-pane>
   </body>
+  {$html}
+
 </html>

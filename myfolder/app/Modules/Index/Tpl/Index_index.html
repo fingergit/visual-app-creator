@@ -87,19 +87,24 @@
   <!--https://github.com/madrobby/keymaster-->
   <script src="basejs/keymaster.js"></script>
   <script src="basejs/actionmanager.js"></script>
+  <script src="basejs/actions/addwidgetaction.js"></script>
+  <script src="basejs/actions/delwidgetaction.js"></script>
   <!--http://benalman.com/projects/jquery-resize-plugin/-->
   <script src="basejs/jquery.ba-resize.js"></script>
 
   <script id="pageRoute" type="text/x-handlebars-template">
-    angular.module('app.routes', [])
-    .config(function($stateProvider, $urlRouterProvider) {
+    app.config(function($stateProvider, $urlRouterProvider) {
     // Ionic uses AngularUI Router which uses the concept of states
     // Learn more here: https://github.com/angular-ui/ui-router
     // Set up the various states which the app can be in.
     // Each state's controller can be found in controllers.js
     $stateProvider{{{state.pageList}}};
-    $urlRouterProvider.otherwise('{{{state.defPage}}}')
+    $urlRouterProvider.otherwise('{{{state.defPage}}}');
     });
+    app.controller('AppCtrl', ['$state', function ($state) {
+    $state.go('{{{state.defPageId}}}');
+    }]);
+
   </script>
 
 </body>

@@ -1,7 +1,7 @@
 'use strict';
 
 // Declare app level module which depends on views, and components
-angular.module('myApp', [
+var finApp = angular.module('myApp', [
   'ui.router'
     ,'myApp.dialog'
     ,'myApp.messagebox'
@@ -108,19 +108,19 @@ angular.module('myApp', [
       });
 }])
 .factory('FinProject', ["ActionManager", function(ActionManager){
-    var proj = new SFinProject('first', EFinProjectType.blank.type);
+    var proj = new SFinProject('first', EFinProjectType.nav.type);
     var projList = [];
 
     var group = SFinProject.newGroup('user', proj);
-    var loginPage = SFinProject.newPage('loginPage', proj);
-    var getPassPage = SFinProject.newPage('getPassPage', proj);
-    SFinProject.insertWidgetByIdx(group, proj);
-    SFinProject.insertWidgetByWidget(getPassPage, group);
-    SFinProject.insertWidgetByWidget(loginPage, group, getPassPage, true);
-    var button = SFinProject.newWidget('login', proj, EFinWidgetType.button, null);
-    var getPassButton = SFinProject.newWidget('getPass', proj, EFinWidgetType.button, null);
-    SFinProject.insertWidgetByWidget(button, loginPage);
-    SFinProject.insertWidgetByWidget(getPassButton, loginPage, button, false);
+    var loginPage = SFinProject.newPage('loginPage', proj, EFinProjPageType.blank);
+    var getPassPage = SFinProject.newPage('getPassPage', proj, EFinProjPageType.blank);
+    SFinProject.insertElemByIdx(group, proj);
+    SFinProject.insertElemByRefElem(getPassPage, group);
+    SFinProject.insertElemByRefElem(loginPage, group, getPassPage, true);
+    var button = SFinProject.newWidget('login', proj, EFinProjWidgetType.button, null, false);
+    var getPassButton = SFinProject.newWidget('getPass', proj, EFinProjWidgetType.button, null, false);
+    SFinProject.insertElemByRefElem(button, loginPage);
+    SFinProject.insertElemByRefElem(getPassButton, loginPage, button, false);
 
 
     return {
@@ -240,15 +240,13 @@ angular.module('myApp', [
         }
     }
 }])
-.factory('FinProjectRender', ["ActionManager", '$compile', '$rootScope', function(ActionManager, $compile, $rootScope){
+.factory('FinProjectRender', ["ActionManager", '$compile', '$rootScope', '$http'
+    , function(ActionManager, $compile, $rootScope, $http){
     return {
-        /**
-         * 新建工程
-         */
-        render: function (project, $htmlBody) {
-            if (!$htmlBody){
-                return;
-            }
+        render: function (project, $htmlBody, defPageId) {
+            // if (!$htmlBody){
+            //     return;
+            // }
             var projectHtml = EFinProjectType[project.type].html;
             var totalHtml = projectHtml;
             var totalRouteCode = '';
@@ -260,21 +258,27 @@ angular.module('myApp', [
                     continue;
                 }
                 var item = pages[idx];
-                var pageHtml = EFinPageTemplate.blank.html;
-                var pageHtml = '<script id="templates/{{page.id}}.html" type="text/ng-template">' + pageHtml + '</script>';
+                var pageHtml = EFinProjPageType[item.pageType].html;
+                pageHtml = '<script id="templates/{{page.id}}.html" type="text/ng-template">' + pageHtml + '</script>';
                 var routeCode = ".state('{{page.id}}', {\
                 url: '/{{page.id}}', \
                     templateUrl: 'templates/{{page.id}}.html' \
             })";
 
                 if (!defPage){
-                    defPage = "/" + item.id;
+                    if (!defPageId){
+                        defPage = "/" + item.id;
+                    }
+                    else{
+                        defPage = "/" + defPageId;
+                    }
                 }
 
                 var template = Handlebars.compile(pageHtml);
                 var context = {
-                    page: {title: "我是标题",
-                        id: item.id}
+                    page: {title: item.name
+                        ,id: item.id
+                        ,content: SFinProject.renderPage(item)}
                 };
                 totalHtml += template(context);
 
@@ -287,14 +291,29 @@ angular.module('myApp', [
             var totalRouteCode2 = Handlebars.compile(source);
             var context2 = {
                 state: {
-                    pageList: totalRouteCode,
-                    defPage: defPage
+                    pageList: totalRouteCode
+                    ,defPage: defPage
+                    ,defPageId: defPageId
                 }
             };
             totalRouteCode2 = totalRouteCode2(context2);
 
-            var okHtml = $compile(totalHtml + "<script>" + totalRouteCode2 + "</script>")($rootScope);
-            $htmlBody.append(okHtml.text());
+            totalHtml = totalHtml + "<script>" + totalRouteCode2 + "</script>";
+            // var okHtml = $compile(totalHtml)($rootScope);
+            // $htmlBody.append(okHtml.text());
+
+            $http({
+                method: 'POST',
+                url: '/visualapp/index.php/index/frame',
+                data: {html: totalHtml},
+                // headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+            }).success(function(data,header,config,status){
+                // $rootScope.frameBody.append("<div>" + data.name + "</div>");
+                window.frames["appframe"].location.reload(true);
+            }).error(function(data,header,config,status){
+            });
+
+            return totalHtml;
         }
     }
 }])
@@ -333,15 +352,16 @@ angular.module('myApp', [
             // });
 
             // 使用$http方法
-            $http({
-                method: 'POST',
-                url: '/visualapp/index.php/index/frame',
-                data: {a: 'a'},
-                // headers: {'Content-Type': 'application/x-www-form-urlencoded'}
-            }).success(function(data,header,config,status){
-                $rootScope.frameBody.append("<div>" + data.name + "</div>");
-            }).error(function(data,header,config,status){
-            });
+            // $http({
+            //     method: 'POST',
+            //     url: '/visualapp/index.php/index/frame',
+            //     data: {html: FinProjectRender.render($rootScope.project, null)},
+            //     // headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+            // }).success(function(data,header,config,status){
+            //     // $rootScope.frameBody.append("<div>" + data.name + "</div>");
+            //     window.frames["appframe"].location.reload(true);
+            // }).error(function(data,header,config,status){
+            // });
 
             return;
 
@@ -404,6 +424,38 @@ angular.module('myApp', [
 
         $rootScope.defaultEnable = function () {
             return true;
+        };
+
+        $rootScope.selectedElem = null;
+        $rootScope.$watch('selectedElem', function (newValue,oldValue, scope) {
+            if (newValue === oldValue){
+                return;
+            }
+
+            if (newValue && newValue.type === EFinProjElementType.page){
+                FinProjectRender.render($rootScope.project, null, newValue.id);
+            }
+            $rootScope.selectedElemParent = SFinProject.findParent($rootScope.selectedElem, $rootScope.project);
+        });
+
+        $rootScope.idx = 1;
+        $rootScope.addWidget = function (event) {
+            if (!$rootScope.selectedElem || $rootScope.selectedElem.type !== EFinProjElementType.page){
+                return;
+            }
+            var newBtn = SFinProject.newWidget('added' + $rootScope.idx, $rootScope.project, EFinProjElementType.button, null);
+            var action = new AddWidgetAction($rootScope, '添加控件', newBtn, $rootScope.selectedElem);
+            ActionManager.addAction(action);
+            $rootScope.idx ++;
+        };
+
+        $rootScope.delWidget = function (event) {
+            if (!$rootScope.selectedElem){
+                return;
+            }
+
+            var action = new DelWidgetAction($rootScope, '删除控件', $rootScope.selectedElem, $rootScope.selectedElemParent);
+            ActionManager.addAction(action);
         };
 
         $rootScope.confirm = function (content,title) {
