@@ -70,7 +70,7 @@ angular.module('myApp.common',[])
         ,templateUrl: './common/prop-combox.html'
         ,link: function ($scope, element, attrs, control) {
             $scope.onItemClick = function(item){
-                $scope.ngModel = item;
+                $scope.ngModel = item.name;
             }
         }
     };

@@ -21,6 +21,16 @@
 
     <!-- your app's js -->
     <script src="__PUBLIC__/template/js/app.js"></script>
+    <script>
+      function compileElement(html) {
+        var injector = angular.element(document.body).injector();
+        var rootScope = injector.get("$rootScope");
+        var compile = injector.get("$compile");
+
+        var okHtml = compile(html)(rootScope);
+        return okHtml;
+      }
+    </script>
 
 
   </head>
@@ -32,7 +42,7 @@
       <ion-content>
       </ion-content>
     </ion-pane>
+    {$html}
   </body>
-  {$html}
 
 </html>

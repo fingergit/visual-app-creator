@@ -1,4 +1,27 @@
 <div ng-controller="RightPanelCtrl" class="match-parent-width">
+    <uib-tabset active="active">
+        <uib-tab index="$index" heading="{{tab.name}}" ng-repeat="tab in finSelect.attr">
+            <div ng-if="tab.value">
+                <div class="form-horizontal">
+                    <div ng-repeat="(attr,attrValue) in tab.value">
+                        <div ng-switch on="tab.value.desc[attr].type">
+                            <div ng-switch-when="string">
+                                <fin-prop-input label="tab.value.desc[attr].name" ng-model="tab.value.desc[attr].value" type="text"></fin-prop-input>
+                            </div>
+                            <div ng-switch-when="enumCombox">
+                                <fin-prop-combox label="tab.value.desc[attr].name" ng-model="attrValue.name"
+                                                 value-range="tab.value.desc[attr].range"></fin-prop-combox>
+                            </div>
+                            <div ng-switch-when="boolSwitch">
+                                <fin-prop-switch label="tab.value.desc[attr].name" ng-model="tab.value.desc[attr].value"></fin-prop-switch>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </uib-tab>
+    </uib-tabset>
+
     <uib-accordion close-others="oneAtATime">
         <uib-accordion-group heading="文本" is-open='true'>
             <fin-prop-text-panel></fin-prop-text-panel>

@@ -13,12 +13,12 @@ var EFinProjElementType = {
 
 /** APP项目中的Widget类型*/
 var EFinProjWidgetType = {
-    button: {type: 'button', isContainer: false, html: '<button class="button button-positive">{{widget.name}}</button>'}
-    ,radio: {type: 'radio', isContainer: false, html: '<ion-list><ion-radio ng-model="choice" ng-value="\'A\'">Choose A</ion-radio><ion-radio ng-model="choice" ng-value="\'B\'">Choose B</ion-radio></ion-list>'}
-    ,range: {type: 'range', isContainer: false, html: '<ion-list><ion-radio ng-model="choice" ng-value="\'A\'">Choose A</ion-radio><ion-radio ng-model="choice" ng-value="\'B\'">Choose B</ion-radio></ion-list>'}
-    ,header: {type: 'header', isContainer: true, html: '<ion-header-bar align-title="left" class="bar-positive">{{{widgets.html}}}</ion-header-bar>'}
-    ,content: {type: 'content', isContainer: true, html: '<ion-content class="has-header">{{{widgets.html}}</ion-content>'}
-    ,footer: {type: 'footer', isContainer: true, html: '<ion-footer-bar align-title="left" class="bar-positive">{{{widgets.html}}}</ion-footer-bar>'}
+    button: {type: 'button', isContainer: false, attr: 'SFinHeaderAttr.newInstance()', html: '<button id="{{widget.id}}" class="button button-positive">{{widget.name}}</button>'}
+    ,radio: {type: 'radio', isContainer: false, attr: 'SFinHeaderAttr.newInstance()', html: '<ion-list id="{{widget.id}}"><ion-radio ng-model="choice" ng-value="\'A\'">Choose A</ion-radio><ion-radio ng-model="choice" ng-value="\'B\'">Choose B</ion-radio></ion-list>'}
+    ,range: {type: 'range', isContainer: false, attr: 'SFinHeaderAttr.newInstance()', html: '<ion-list id="{{widget.id}}"><ion-radio ng-model="choice" ng-value="\'A\'">Choose A</ion-radio><ion-radio ng-model="choice" ng-value="\'B\'">Choose B</ion-radio></ion-list>'}
+    ,header: {type: 'header', isContainer: true, attr: 'SFinHeaderAttr.newInstance()', html: '<ion-header-bar id="{{widget.id}}" align-title="{{widget.textAlign}}" class="bar-{{widget.theme}}">ABCD</ion-header-bar>'}
+    ,content: {type: 'content', isContainer: true, attr: 'SFinHeaderAttr.newInstance()', html: '<ion-content id="{{widget.id}}" class="has-header">{{{widgets.html}}</ion-content>'}
+    ,footer: {type: 'footer', isContainer: true, attr: 'SFinHeaderAttr.newInstance()', html: '<ion-footer-bar id="{{widget.id}}" align-title="left" class="bar-positive">{{{widgets.html}}}</ion-footer-bar>'}
 };
 
 var EFinProjectType = {
@@ -42,11 +42,16 @@ var EFinProjPageType = {
  * @param border 边框属性
  * @constructor 构造器。
  */
-function SFinWidgetAttr(text, position, border) {
-    this.text = text;
-    this.position = position;
-    this.border = border;
+function SFinWidgetAttr(custom) {
+    this.custom = custom;
+    this.text = null;
+    this.position = null;
+    this.border = null;
 }
+
+SFinWidgetAttr.newInstance = function (custom) {
+    return new SFinWidgetAttr(custom);
+};
 
 /**
  * App Project结构元素。
@@ -106,6 +111,12 @@ function SFinProject(name, type){
             continue;
         }
         this.nextId[EFinProjElementType[idx]] = 1;
+    }
+    for (idx in EFinProjWidgetType){
+        if (!EFinProjWidgetType.hasOwnProperty(idx)){
+            continue;
+        }
+        this.nextId[EFinProjWidgetType[idx].type] = 1;
     }
 }
 
@@ -251,11 +262,11 @@ SFinProject.newPage = function (name, proj, pageType) {
  * @param isContainer 是否为容器
  * @returns {SFinPageWidget}
  */
-SFinProject.newWidget = function (name, proj, widgetType, attr, isContainer) {
-    var id = widgetType + proj.nextId[widgetType];
-    proj.nextId[widgetType] ++;
+SFinProject.newWidget = function (name, proj, widgetType, attr) {
+    var id = widgetType.type + proj.nextId[widgetType.type];
+    proj.nextId[widgetType.type] ++;
 
-    return new SFinPageWidget(name, id, attr, widgetType, isContainer);
+    return new SFinPageWidget(name, id, attr, widgetType, widgetType.isContainer);
 };
 
 /**
@@ -284,6 +295,40 @@ SFinProject.findParent = function (elem, root) {
     }
 
     return parent;
+};
+
+/**
+ * 查找元素所在页面。
+ * @param elem
+ */
+SFinProject.getPage = function (elem, project) {
+    var page = null;
+    if (elem.type === EFinProjElementType.group){
+        return null;
+    }
+    else if (elem.type === EFinProjElementType.page){
+        return elem;
+    }
+    else{
+        for (var idx in project.children){
+            if (!project.children.hasOwnProperty(idx)){
+                continue;
+            }
+
+            var item = project.children[idx];
+            if (item.type !== EFinProjElementType.page){
+                continue;
+            }
+
+            var parent = SFinProject.findParent(elem, item);
+            if (parent){
+                page = parent;
+                break;
+            }
+        }
+    }
+
+    return page;
 };
 
 /**
@@ -317,46 +362,54 @@ SFinProject.getAllPages = function (root) {
  */
 SFinProject.renderPage = function (root) {
     var html = '';
-    for (var widget in root.children){
-        if (!root.children.hasOwnProperty(widget)){
-            continue;
-        }
-        var item = root.children[widget];
-        if (item.type !== EFinProjElementType.widget){
-            continue;
-        }
-
-        var htmlTpl = EFinProjWidgetType[item.widgetType].html;
+    if (root.type === EFinProjElementType.widget){
+        var htmlTpl = EFinProjWidgetType[root.widgetType].html;
         var template = Handlebars.compile(htmlTpl);
 
         var context = null;
-        if (item.isContainer){
-            var childHtml = SFinProject.renderPage(item);
+        switch (root.widgetType){
+            case EFinProjWidgetType.button.type:
+                context = {
+                    widget: {id: root.id, name: root.name}
+                };
+                break;
+            case EFinProjWidgetType.radio.type:
+                context = {
+                    widget: {}
+                };
+                break;
+            case EFinProjWidgetType.header.type:
+                context = {
+                    widget: {id: root.id, textAlign:root.attr.custom.titleAlign.value, theme: root.attr.custom.theme.value}
+                };
+                break;
+            // TODO: 每个widget根据情况来定占位符。
+            default:
+                context = {};
+                break;
+        }
+        if (root.isContainer){
+            var childHtml = '';
+            for (var childIdx in root.children){
+                childHtml += SFinProject.renderPage(root[childIdx]);
+            }
 
             // TODO: 每个widgetContainer中都要有一个widgets占位符。
-            context = {
-                widgets: {html: childHtml}
-            };
-        }
-        else{
-            switch (item.widgetType){
-                case EFinProjWidgetType.button.type:
-                    context = {
-                        widget: {name: item.name}
-                    };
-                    break;
-                case EFinProjWidgetType.radio.type:
-                    context = {
-                        widget: {}
-                    };
-                    break;
-                // TODO: 每个widget根据情况来定占位符。
-                default:
-                    context = {};
-                    break;
-            }
+            context.widgets = {html: childHtml};
         }
         html += template(context);
+    }
+    else{
+        for (var widget in root.children){
+            if (!root.children.hasOwnProperty(widget)){
+                continue;
+            }
+            var item = root.children[widget];
+            if (item.type !== EFinProjElementType.widget){
+                continue;
+            }
+            html += SFinProject.renderPage(item);
+        }
     }
 
     return html;

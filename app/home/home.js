@@ -123,8 +123,8 @@ angular.module('myApp.home',['myApp.home.toolbar','myApp.home.leftpanel','myApp.
     };
 }])
 
-.directive('finAppFrame', ['$rootScope', '$parse', '$document', '$window', '$compile', 'FinProjectRender', 'ActionManager'
-    , function($rootScope, $parse, $document, $window, $compile, FinProjectRender, ActionManager) {
+.directive('finAppFrame', ['$rootScope', '$parse', '$document', '$window', '$compile', 'FinProjectRender', 'ActionManager', 'FinSelection'
+    , function($rootScope, $parse, $document, $window, $compile, FinProjectRender, ActionManager, FinSelection) {
     return {
         restrict: 'A'
         ,link: function (scope, element, attrs) {
@@ -132,6 +132,7 @@ angular.module('myApp.home',['myApp.home.toolbar','myApp.home.leftpanel','myApp.
                 var frameName = element.attr('name');
                 var appFrame = window.frames[frameName];
                 var $body = $(window.frames[frameName].document).find('body');
+                var appDoc = window.frames[frameName].document;
                 $body.on('dragover', function (e) {
                     e.preventDefault();
 
@@ -144,12 +145,25 @@ angular.module('myApp.home',['myApp.home.toolbar','myApp.home.leftpanel','myApp.
                     var target = e.originalEvent.srcElement || e.originalEvent.target;
                     // var $elem = $(widgetType.html);
                     // $elem.appendTo($(target));
-                    var okHtml = $compile(widgetType.html)($rootScope);
-                    $(target).append($(okHtml));
+                    //
+                    // var okHtml = window.frames[frameName].compileElement(widgetType.html);
+                    // var $elem = $(okHtml);
+                    // $elem.appendTo($(target));
 
+                    // var okHtml = $compile(widgetType.html)($rootScope);
+                    // $(target).append($(okHtml));
+                    // var okHtml = angular.bootstrap($(target));
+                    // $(target).append($(okHtml));
 
-                    var newBtn = SFinProject.newWidget('added' + $rootScope.idx, $rootScope.project, widgetType, widgetType.isContainer);
-                    var action = new AddWidgetAction($rootScope, '添加控件', newBtn, $rootScope.selectedElem);
+                    var attr = SFinWidgetAttr.newInstance(widgetType.attr ? eval(widgetType.attr) : null);
+                    var newWidget = SFinProject.newWidget('added' + $rootScope.idx, $rootScope.project, widgetType, attr);
+                    var html = SFinProject.renderPage(newWidget);
+
+                    var okHtml = window.frames[frameName].compileElement(html);
+                    var $elem = $(okHtml);
+                    $elem.appendTo($(target));
+
+                    var action = new AddWidgetAction($rootScope, '添加控件', newWidget, $rootScope.selectedElem);
                     ActionManager.addAction(action);
                     $rootScope.idx ++;
                 });

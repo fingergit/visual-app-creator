@@ -9,7 +9,22 @@ angular.module('myApp.home.rightpanel',[])
   // });
 }])
 
-.controller('RightPanelCtrl', ['$scope', function($scope) {
+.controller('RightPanelCtrl', ['$scope','FinSelection', function($scope,FinSelection) {
+    $scope.finSelect = FinSelection;
+
+    $scope.$watch('finSelect', function (newValue,oldValue, scope) {
+        if (newValue === oldValue){
+            return;
+        }
+        if (!newValue){
+            return;
+        }
+
+        FinSelection.element.attr.custom = FinSelection.attr[0];
+        FinSelection.element.attr.text = FinSelection.attr[1];
+        FinSelection.element.attr.position = FinSelection.attr[2];
+        FinSelection.element.attr.border = FinSelection.attr[3];
+    }, true);
 }])
 
 .controller('PropTextCtrl', ['$scope', '$rootScope','$window', '$log', 'ActionManager', 'FinProjectRender'
@@ -48,18 +63,6 @@ angular.module('myApp.home.rightpanel',[])
 
     $scope.onBtnTest = function () {
     };
-
-    // $scope.$watch('propText.color',function(newValue,oldValue, scope){
-    //     valueChange(newValue, oldValue, scope, "文字颜色", scope.propText, "color");
-    // });
-    //
-    // $scope.$watch('propText.size',function(newValue,oldValue, scope){
-    //     valueChange(newValue, oldValue, scope, "字体", scope.propText, "size");
-    // });
-    //
-    // $scope.$watch('slider.value',function(newValue, oldValue, scope){
-    //     valueChange(newValue, oldValue, scope, "数值", scope.slider, "value");
-    // });
 
     /**
      * 当单个数据发生变化时，将期加入undoredo中。

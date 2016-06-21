@@ -317,10 +317,19 @@ var finApp = angular.module('myApp', [
         }
     }
 }])
+.factory('FinSelection', ['$rootScope'
+    , function($rootScope){
+    return {
+        group: null
+        , page: null
+        , element: null
+        , attr: null
+    }
+}])
 
 .controller('AppCtrl', ['$scope', '$rootScope', '$uibModal', '$log', 'Hotkeys', 'FinProject', 'ActionManager', 'FinProjectRender',
-    '$resource','$http'
-    ,function($scope, $rootScope, $uibModal, $log, Hotkeys, FinProject, ActionManager, FinProjectRender, $resource,$http) {
+    '$resource','$http','FinSelection'
+    ,function($scope, $rootScope, $uibModal, $log, Hotkeys, FinProject, ActionManager, FinProjectRender, $resource,$http,FinSelection) {
         Hotkeys.regist();
         $rootScope.project = FinProject.requestProject();
 
@@ -425,16 +434,41 @@ var finApp = angular.module('myApp', [
         $rootScope.defaultEnable = function () {
             return true;
         };
+        $rootScope.attrTab = [
+            {name: '自定义', value: ($rootScope.selectedElem && $rootScope.selectedElem.attr) ? $rootScope.selectedElem.attr.custom : null}
+            ,{name: '文本', value: ($rootScope.selectedElem && $rootScope.selectedElem.attr) ? $rootScope.selectedElem.attr.text : null}
+            ,{name: '位置', value: ($rootScope.selectedElem && $rootScope.selectedElem.attr) ? $rootScope.selectedElem.attr.position : null}
+            ,{name: '边框', value: ($rootScope.selectedElem && $rootScope.selectedElem.attr) ? $rootScope.selectedElem.attr.border : null}
+        ];
 
         $rootScope.selectedElem = null;
         $rootScope.$watch('selectedElem', function (newValue,oldValue, scope) {
             if (newValue === oldValue){
                 return;
             }
-
-            if (newValue && newValue.type === EFinProjElementType.page){
-                FinProjectRender.render($rootScope.project, null, newValue.id);
+            if (!newValue){
+                return;
             }
+
+            if (newValue){
+                switch (newValue.type){
+                    case EFinProjElementType.page:
+                        FinProjectRender.render($rootScope.project, null, newValue.id);
+                        break;
+                    case EFinProjElementType.widget:
+                        FinSelection.attr = [
+                            {name: '自定义', value: (newValue.attr) ? newValue.attr.custom : null}
+                            ,{name: '文本', value: (newValue.attr) ? newValue.attr.text : null}
+                            ,{name: '位置', value: (newValue.attr) ? newValue.attr.position : null}
+                            ,{name: '边框', value: (newValue.attr) ? newValue.attr.border : null}
+                        ];
+
+                        FinSelection.page = SFinProject.getPage(newValue, $rootScope.project);
+                        FinSelection.element = newValue;
+                        break;
+                }
+            }
+
             $rootScope.selectedElemParent = SFinProject.findParent($rootScope.selectedElem, $rootScope.project);
         });
 
