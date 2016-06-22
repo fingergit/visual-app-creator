@@ -13,12 +13,21 @@ var EFinProjElementType = {
 
 /** APP项目中的Widget类型*/
 var EFinProjWidgetType = {
-    button: {type: 'button', isContainer: false, attr: 'SFinHeaderAttr.newInstance()', html: '<button id="{{widget.id}}" class="button button-positive">{{widget.name}}</button>'}
-    ,radio: {type: 'radio', isContainer: false, attr: 'SFinHeaderAttr.newInstance()', html: '<ion-list id="{{widget.id}}"><ion-radio ng-model="choice" ng-value="\'A\'">Choose A</ion-radio><ion-radio ng-model="choice" ng-value="\'B\'">Choose B</ion-radio></ion-list>'}
-    ,range: {type: 'range', isContainer: false, attr: 'SFinHeaderAttr.newInstance()', html: '<ion-list id="{{widget.id}}"><ion-radio ng-model="choice" ng-value="\'A\'">Choose A</ion-radio><ion-radio ng-model="choice" ng-value="\'B\'">Choose B</ion-radio></ion-list>'}
-    ,header: {type: 'header', isContainer: true, attr: 'SFinHeaderAttr.newInstance()', html: '<ion-header-bar id="{{widget.id}}" align-title="{{widget.textAlign}}" class="bar-{{widget.theme}}">ABCD</ion-header-bar>'}
-    ,content: {type: 'content', isContainer: true, attr: 'SFinHeaderAttr.newInstance()', html: '<ion-content id="{{widget.id}}" class="has-header">{{{widgets.html}}</ion-content>'}
-    ,footer: {type: 'footer', isContainer: true, attr: 'SFinHeaderAttr.newInstance()', html: '<ion-footer-bar id="{{widget.id}}" align-title="left" class="bar-positive">{{{widgets.html}}}</ion-footer-bar>'}
+    button: 'button'
+    ,radio: 'radio'
+    ,range: 'range'
+    ,header: 'header'
+    ,content: 'content'
+    ,footer: 'footer'
+};
+
+var EFinProjWidgetDesc = {
+    button: {isContainer: false, attr: 'SFinHeaderAttr.newInstance()', html: '<button id="{{widget.id}}" class="button button-positive">{{widget.name}}</button>'}
+    ,radio: {isContainer: false, attr: 'SFinHeaderAttr.newInstance()', html: '<ion-list id="{{widget.id}}"><ion-radio ng-model="choice" ng-value="\'A\'">Choose A</ion-radio><ion-radio ng-model="choice" ng-value="\'B\'">Choose B</ion-radio></ion-list>'}
+    ,range: {isContainer: false, attr: 'SFinHeaderAttr.newInstance()', html: '<ion-list id="{{widget.id}}"><ion-radio ng-model="choice" ng-value="\'A\'">Choose A</ion-radio><ion-radio ng-model="choice" ng-value="\'B\'">Choose B</ion-radio></ion-list>'}
+    ,header: {isContainer: true, attr: 'SFinHeaderAttr.newInstance()', html: '<ion-header-bar id="{{widget.id}}" align-title="{{widget.textAlign}}" class="bar-{{widget.theme}}">{{widget.title}}</ion-header-bar>'}
+    ,content: {isContainer: true, attr: 'SFinHeaderAttr.newInstance()', html: '<ion-content id="{{widget.id}}" class="has-header">{{{widgets.html}}</ion-content>'}
+    ,footer: {isContainer: true, attr: 'SFinHeaderAttr.newInstance()', html: '<ion-footer-bar id="{{widget.id}}" align-title="left" class="bar-positive">{{{widgets.html}}}</ion-footer-bar>'}
 };
 
 var EFinProjectType = {
@@ -80,11 +89,12 @@ function SFinPage(name, id, pageType) {
 SFinPage.prototype=new SFinProjElement();
 SFinPage.prototype.constructor=SFinPage;
 
-function SFinPageWidget(name, id, attr, widgetType, isContainer) {
+function SFinPageWidget(name, id, attr, widgetType) {
     SFinProjElement.call(this, name, EFinProjElementType.widget, id);
     this.attr = attr;
-    this.widgetType = widgetType.type;
-    this.isContainer = isContainer;
+
+    this.widgetType = widgetType;
+    this.isContainer = EFinProjWidgetDesc[widgetType].isContainer;
 }
 SFinPageWidget.prototype=new SFinProjElement();
 SFinPageWidget.prototype.constructor=SFinPageWidget;
@@ -116,7 +126,7 @@ function SFinProject(name, type){
         if (!EFinProjWidgetType.hasOwnProperty(idx)){
             continue;
         }
-        this.nextId[EFinProjWidgetType[idx].type] = 1;
+        this.nextId[EFinProjWidgetType[idx]] = 1;
     }
 }
 
@@ -263,10 +273,10 @@ SFinProject.newPage = function (name, proj, pageType) {
  * @returns {SFinPageWidget}
  */
 SFinProject.newWidget = function (name, proj, widgetType, attr) {
-    var id = widgetType.type + proj.nextId[widgetType.type];
-    proj.nextId[widgetType.type] ++;
+    var id = widgetType + proj.nextId[widgetType];
+    proj.nextId[widgetType] ++;
 
-    return new SFinPageWidget(name, id, attr, widgetType, widgetType.isContainer);
+    return new SFinPageWidget(name, id, attr, widgetType);
 };
 
 /**
@@ -316,14 +326,18 @@ SFinProject.getPage = function (elem, project) {
             }
 
             var item = project.children[idx];
-            if (item.type !== EFinProjElementType.page){
-                continue;
+            if (item.type === EFinProjElementType.page){
+                var parent = SFinProject.findParent(elem, item);
+                if (parent){
+                    page = parent;
+                    break;
+                }
             }
-
-            var parent = SFinProject.findParent(elem, item);
-            if (parent){
-                page = parent;
-                break;
+            else if (item.type === EFinProjElementType.group){
+                page = SFinProject.getPage(elem, item);
+                if (null !== page){
+                    break;
+                }
             }
         }
     }
@@ -363,24 +377,24 @@ SFinProject.getAllPages = function (root) {
 SFinProject.renderPage = function (root) {
     var html = '';
     if (root.type === EFinProjElementType.widget){
-        var htmlTpl = EFinProjWidgetType[root.widgetType].html;
+        var htmlTpl = EFinProjWidgetDesc[root.widgetType].html;
         var template = Handlebars.compile(htmlTpl);
 
         var context = null;
         switch (root.widgetType){
-            case EFinProjWidgetType.button.type:
+            case EFinProjWidgetType.button:
                 context = {
                     widget: {id: root.id, name: root.name}
                 };
                 break;
-            case EFinProjWidgetType.radio.type:
+            case EFinProjWidgetType.radio:
                 context = {
                     widget: {}
                 };
                 break;
-            case EFinProjWidgetType.header.type:
+            case EFinProjWidgetType.header:
                 context = {
-                    widget: {id: root.id, textAlign:root.attr.custom.titleAlign.value, theme: root.attr.custom.theme.value}
+                    widget: {id: root.id, textAlign:root.attr.custom.titleAlign.value, theme: root.attr.custom.theme.value, title: root.attr.custom.title}
                 };
                 break;
             // TODO: 每个widget根据情况来定占位符。

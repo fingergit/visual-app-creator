@@ -1,7 +1,7 @@
 <div class="form-group">
     <label class="col-sm-4 control-label input-sm" ng-bind="label"></label>
     <div class="btn-group col-sm-8" uib-dropdown keyboard-nav>
-        <button type="button" class="btn btn-default btn-sm col-sm-12" uib-dropdown-toggle ng-disabled="disabled">{{ngModel}}<span class="caret"></span></button>
+        <button type="button" class="btn btn-default btn-sm col-sm-12" uib-dropdown-toggle ng-disabled="disabled">{{ngModel.name}}<span class="caret"></span></button>
         <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="split-button">
             <li ng-repeat="item in valueRange" ng-click="onItemClick(item)"><a href="#">{{item.name}}</a></li>
         </ul>

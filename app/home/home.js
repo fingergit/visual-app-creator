@@ -155,7 +155,7 @@ angular.module('myApp.home',['myApp.home.toolbar','myApp.home.leftpanel','myApp.
                     // var okHtml = angular.bootstrap($(target));
                     // $(target).append($(okHtml));
 
-                    var attr = SFinWidgetAttr.newInstance(widgetType.attr ? eval(widgetType.attr) : null);
+                    var attr = SFinWidgetAttr.newInstance(EFinProjWidgetDesc[widgetType].attr ? eval(EFinProjWidgetDesc[widgetType].attr) : null);
                     var newWidget = SFinProject.newWidget('added' + $rootScope.idx, $rootScope.project, widgetType, attr);
                     var html = SFinProject.renderPage(newWidget);
 

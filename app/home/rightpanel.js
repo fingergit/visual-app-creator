@@ -9,7 +9,7 @@ angular.module('myApp.home.rightpanel',[])
   // });
 }])
 
-.controller('RightPanelCtrl', ['$scope','FinSelection', function($scope,FinSelection) {
+.controller('RightPanelCtrl', ['$scope','$rootScope', 'FinSelection', function($scope,$rootScope,FinSelection) {
     $scope.finSelect = FinSelection;
 
     $scope.$watch('finSelect', function (newValue,oldValue, scope) {
@@ -20,10 +20,33 @@ angular.module('myApp.home.rightpanel',[])
             return;
         }
 
-        FinSelection.element.attr.custom = FinSelection.attr[0];
-        FinSelection.element.attr.text = FinSelection.attr[1];
-        FinSelection.element.attr.position = FinSelection.attr[2];
-        FinSelection.element.attr.border = FinSelection.attr[3];
+        var attrChange = false;
+        if (!oldValue || !newValue || !oldValue.attr || !newValue.attr){
+            attrChange = true;
+        }
+        else{
+            for (var i = 0; i < newValue.attr.length; i++){
+                var selElem = FinSelection.element;
+                if (oldValue.attr[i].value !== newValue.attr[i].value){
+                    attrChange = true;
+                    break;
+                }
+            }
+        }
+
+        if (attrChange){
+            var elem = newValue.element;
+            var appFrame = window.frames['appframe'];
+            var $elem = $(appFrame.document).find("#" + elem.id);
+            var $elemParent = $elem.parent();
+
+            var html = SFinProject.renderPage(elem);
+
+            var okHtml = appFrame.compileElement(html);
+
+            $elem.replaceWith($(okHtml));
+        }
+
     }, true);
 }])
 

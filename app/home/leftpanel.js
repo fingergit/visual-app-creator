@@ -76,7 +76,7 @@ angular.module('myApp.home.leftpanel',[])
     //     ,{name: 'haha', iconNormalPos: -200, iconHoverPos: -250}
     // ];
     
-    $scope.widgets = EFinProjWidgetType;
+    $scope.widgets = EFinProjWidgetDesc;
 }])
 
 ;

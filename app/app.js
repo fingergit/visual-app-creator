@@ -435,10 +435,10 @@ var finApp = angular.module('myApp', [
             return true;
         };
         $rootScope.attrTab = [
-            {name: '自定义', value: ($rootScope.selectedElem && $rootScope.selectedElem.attr) ? $rootScope.selectedElem.attr.custom : null}
-            ,{name: '文本', value: ($rootScope.selectedElem && $rootScope.selectedElem.attr) ? $rootScope.selectedElem.attr.text : null}
-            ,{name: '位置', value: ($rootScope.selectedElem && $rootScope.selectedElem.attr) ? $rootScope.selectedElem.attr.position : null}
-            ,{name: '边框', value: ($rootScope.selectedElem && $rootScope.selectedElem.attr) ? $rootScope.selectedElem.attr.border : null}
+            {name: '自定义', type: 'custom', value: ($rootScope.selectedElem && $rootScope.selectedElem.attr) ? $rootScope.selectedElem.attr.custom : null}
+            ,{name: '文本', type: 'text', value: ($rootScope.selectedElem && $rootScope.selectedElem.attr) ? $rootScope.selectedElem.attr.text : null}
+            ,{name: '位置', type: 'position', value: ($rootScope.selectedElem && $rootScope.selectedElem.attr) ? $rootScope.selectedElem.attr.position : null}
+            ,{name: '边框', type: 'border', value: ($rootScope.selectedElem && $rootScope.selectedElem.attr) ? $rootScope.selectedElem.attr.border : null}
         ];
 
         $rootScope.selectedElem = null;
@@ -457,10 +457,10 @@ var finApp = angular.module('myApp', [
                         break;
                     case EFinProjElementType.widget:
                         FinSelection.attr = [
-                            {name: '自定义', value: (newValue.attr) ? newValue.attr.custom : null}
-                            ,{name: '文本', value: (newValue.attr) ? newValue.attr.text : null}
-                            ,{name: '位置', value: (newValue.attr) ? newValue.attr.position : null}
-                            ,{name: '边框', value: (newValue.attr) ? newValue.attr.border : null}
+                            {name: '自定义', type: 'custom', value: (newValue.attr) ? newValue.attr.custom : null}
+                            ,{name: '文本', type: 'text', value: (newValue.attr) ? newValue.attr.text : null}
+                            ,{name: '位置', type: 'position', value: (newValue.attr) ? newValue.attr.position : null}
+                            ,{name: '边框', type: 'border', value: (newValue.attr) ? newValue.attr.border : null}
                         ];
 
                         FinSelection.page = SFinProject.getPage(newValue, $rootScope.project);

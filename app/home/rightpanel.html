@@ -6,14 +6,14 @@
                     <div ng-repeat="(attr,attrValue) in tab.value">
                         <div ng-switch on="tab.value.desc[attr].type">
                             <div ng-switch-when="string">
-                                <fin-prop-input label="tab.value.desc[attr].name" ng-model="tab.value.desc[attr].value" type="text"></fin-prop-input>
+                                <fin-prop-input label="tab.value.desc[attr].name" ng-model="tab.value[attr]" type="text"></fin-prop-input>
                             </div>
                             <div ng-switch-when="enumCombox">
-                                <fin-prop-combox label="tab.value.desc[attr].name" ng-model="attrValue.name"
+                                <fin-prop-combox label="tab.value.desc[attr].name" ng-model="attrValue"
                                                  value-range="tab.value.desc[attr].range"></fin-prop-combox>
                             </div>
                             <div ng-switch-when="boolSwitch">
-                                <fin-prop-switch label="tab.value.desc[attr].name" ng-model="tab.value.desc[attr].value"></fin-prop-switch>
+                                <fin-prop-switch label="tab.value.desc[attr].name" ng-model="tab.value[attr]"></fin-prop-switch>
                             </div>
                         </div>
                     </div>
